@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:text="Tap And Pair"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nfc_pair_button"
+        android:layout_alignParentTop="true" />
+    <Button
+        android:text="NFC Utilities"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nfc_utils_button"
+        android:layout_below="@id/nfc_pair_button" />
+    <Button
+        android:text="Bluetooth Utilities"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/bluetooth_utils_button"
+        android:layout_below="@id/nfc_utils_button"
+        layout_heightPercent="25%" />
+</RelativeLayout>

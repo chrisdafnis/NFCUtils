@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CommonEventHandler</name>
+    </assembly>
+    <members>
+        <member name="T:CommonEventHandler.CommonEventHandlerDlgt">
+            <summary>
+            This delegate describes the signature of the event, which is emited by the generated helper classes.
+            </summary>
+        </member>
+        <member name="T:CommonEventHandler.EventHandlerFactory">
+            <summary>
+            Summary description for EventHandlerFactory.
+            </summary>
+        </member>
+        <member name="M:CommonEventHandler.EventHandlerFactory.#ctor(System.String)">
+            <summary>
+            Creates the EventHandlerFactory.
+            </summary>
+            <param name="Name">Name of the Factory. Is used as naming component of the event handlers to create.</param>
+        </member>
+        <member name="M:CommonEventHandler.EventHandlerFactory.GetEventHandler(System.Reflection.EventInfo)">
+            <summary>
+            Creates an event handler for the specified event
+            </summary>
+            <param name="Info">The event info class of the event</param>
+            <returns>The created event handler help class.</returns>
+        </member>
+        <member name="T:CommonEventHandler.EventHandlerTypeEmitter">
+            <summary>
+            Summary description for EventHandlerTypeEmitter.
+            </summary>
+        </member>
+        <member name="M:CommonEventHandler.EventHandlerTypeEmitter.#ctor(System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="Name">The name, which the is given to assembly, module and class.</param>
+        </member>
+        <member name="M:CommonEventHandler.EventHandlerTypeEmitter.GetEventHandlerType(System.Reflection.EventInfo)">
+            <summary>
+            Emits dynamically a event handler with a given signature, which fills all arguments of the event in an object array 
+            and calls a common event.
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

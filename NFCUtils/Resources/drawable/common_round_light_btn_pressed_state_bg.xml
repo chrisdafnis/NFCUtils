@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/common_light_btn_pressed_state_bg_color" />
+    <corners android:radius="@dimen/common_dark_btn_corner_radius" />
+
+</shape>

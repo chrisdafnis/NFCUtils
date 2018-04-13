@@ -1,0 +1,74 @@
+﻿<resources>
+
+  <color name="colorPrimary">#065286</color>
+  <color name="colorPrimaryDark">#044976</color>
+  <color name="colorAccent">#044976</color>
+
+  <!--Common -->
+  <color name="colorWhite">#ffffff</color>
+  <color name="colorBlack">#000000</color>
+  <color name="colorBGColor">#f2f2f2</color>
+  <!--<color name="scrollbar_indicator_color">#80039bc9</color>-->
+  <color name="scrollbar_indicator_color">#5d5e59</color>
+
+  <!--Common ToolBar-->
+  <color name="common_toolbar_title_text_color">@color/colorWhite</color>
+  <color name="common_toolbar_action_btn_tv_text_color">@color/colorWhite</color>
+  <color name="common_toolbar_action_btn_pressed_state_color">#093450</color>
+
+  <!--Common dark Button-->
+  <color name="common_dark_btn_normal_state_bg_color">#065286</color>
+  <color name="common_dark_btn_pressed_state_bg_color">#306b27</color>
+  <color name="common_dark_btn_disabled_state_bg_color">#e5e5e5</color>
+  <color name="common_dark_btn_normal_state_text_color">#ffffff</color>
+  <color name="common_dark_btn_pressed_state_text_color">#ffffff</color>
+  <color name="common_dark_btn_disabled_state_text_color">#393939</color>
+  <color name="common_dark_btn_disabled_state_border_color">#393939</color>
+  <color name="common_dark_btn_disabled_state_image_text_color">#707070</color>
+
+  <!--Common light Button-->
+  <color name="common_light_btn_normal_state_bg_color">#65c3ff</color>
+  <color name="common_light_btn_pressed_state_bg_color">#306b27</color>
+  <color name="common_light_btn_disabled_state_bg_color">#e5e5e5</color>
+  <color name="common_light_btn_disabled_state_bdr_color">#2d2d2d</color>
+  <color name="common_light_btn_normal_state_text_color">#004b7f</color>
+  <color name="common_light_btn_pressed_state_text_color">#ffffff</color>
+  <color name="common_light_btn_disabled_state_text_color">#393939</color>
+  <color name="common_light_btn_disabled_state_border_color">#393939</color>
+
+  <!--Common ET-->
+  <color name="common_et_normal_state_bg_color">@color/colorWhite</color>
+  <color name="common_et_disabled_state_bg_color">@color/common_light_btn_disabled_state_bg_color</color>
+  <color name="common_et_normal_state_border_color">#005087</color>
+  <color name="common_et_disabled_state_border_color">@color/common_light_btn_disabled_state_border_color</color>
+  <color name="common_et_normal_state_text_color">@color/common_label_tv_text_color</color>
+  <color name="common_et_disabled_state_text_color">@color/common_label_tv_disable_state_text_color</color>
+
+  <!--Common Label TV-->
+  <color name="common_label_tv_text_color">@color/colorBlack</color>
+  <color name="common_label_tv_disable_state_text_color">#3d3d3d</color>
+
+  <!--Common List Item-->
+  <color name="common_list_item_selected_state_color">#c0ffc0</color>
+  <color name="common_list_item_disable_state_color">#dbdbdb</color>
+
+  <!--Green Button-->
+  <color name="green_btn_normal_state_bg_color">#07a11d</color>
+
+  <!--Layout border-->
+  <color name="common_layout_border_color">#d4d4d4</color>
+
+  <!--Layout header-->
+  <color name="layout_header_color">#c2e8ff</color>
+
+
+  <!--Shift RV item layout-->
+  <color name="shift_rv_item_lay_number_of_tours_tv_color">#3f3d40</color>
+
+  <!--Compartment RV item layout-->
+  <color name="compartment_rv_item_lay_product_name_tv_bg_color">#c1e7fe</color>
+  <color name="compartment_rv_item_lay_divider_color">#f5f5f5</color>
+
+  <color name="view_backgound_color">@android:color/darker_gray</color>
+
+</resources>

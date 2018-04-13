@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">NFC Utilities</string>
+  <string name="menu_refresh">Refresh</string>
+  <string name="MainActivity_PairedDevices">Paired Devices</string>
+  <string name="MainActivity_TapToPair">Touch device to Tag to pair</string>
+  <string name="MainActivity_AttemptToPair">Attempting to pair with</string>
+  <string name="MainActivity_PairSuccessful">Successfully paired with</string>
+  <string name="MainActivity_PairFailed">Failed to pair with</string>
+  <string name="MainActivity_PairComplete">Pairing Complete</string>
+  <string name="MainActivity_PrintPrompt">Are you sure you want to print a test page?</string>
+  <string name="MainActivity_AlreadyPaired">is already paired</string>
+  <string name="MainActivity_PrintTestPage">Click to print test label</string>
+  <string name="MainActivity_UnpairDevice">Click to Unpair device</string>
+</resources>

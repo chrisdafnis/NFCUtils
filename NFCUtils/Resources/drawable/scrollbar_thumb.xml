@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:right="1dp">
+    <!-- Your Margin -->
+    <shape>
+      <solid android:color="@color/scrollbar_indicator_color" />
+      <!-- Your Color -->
+      <corners android:radius="3dp" />
+      <!-- Your Radius -->
+      <size android:width="7dp" />
+      <!-- Your Width -->
+    </shape>
+  </item>
+</layer-list>
+<!--<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+
+  <gradient
+      android:angle="0"
+      android:endColor="#005A87"
+      android:startColor="#007AB8" />
+
+  <size
+        android:width="30dp" />
+
+  <corners android:radius="6dp" />
+
+</shape>-->

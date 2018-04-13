@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+  <declare-styleable name="CustomEditText">
+    <attr name="editTextFontName" format="string" />
+  </declare-styleable>
+
+
+  <declare-styleable name="CustomTextView">
+    <attr name="textViewFontName" format="string" />
+  </declare-styleable>
+
+  <declare-styleable name="CustomButton">
+    <attr name="buttonFontName" format="string" />
+  </declare-styleable>
+
+  <declare-styleable name="CustomCheckBox">
+    <attr name="checkBoxFontName" format="string" />
+  </declare-styleable>
+
+  <declare-styleable name="CustomImageButtonTextView">
+    <attr name="imageButtonTextViewImageTextFontName" format="string" />
+    <attr name="imageButtonTextViewSimpleTextFontName" format="string" />
+    <attr name="imageButtonTextViewImageTextSize" format="dimension" />
+    <attr name="imageButtonTextViewSimpleTextSize" format="dimension" />
+    <attr name="imageButtonTextViewImageText" format="string" />
+    <attr name="imageButtonTextViewSimpleText" format="string" />
+    <attr name="imageButtonTextViewSimpleTextColor" format="color" />
+    <attr name="imageButtonTextViewImageTextColor" format="color" />
+    <attr name="android:textColor" />
+  </declare-styleable>
+
+  <declare-styleable name="CircleProgress">
+    <attr name="circle_progress" format="integer"/>
+    <attr name="circle_max" format="integer"/>
+
+    <attr name="circle_unfinished_color" format="color"/>
+    <attr name="circle_finished_color" format="color"/>
+
+    <attr name="circle_text_size" format="dimension"/>
+    <attr name="circle_text_color" format="color"/>
+
+    <attr name="circle_prefix_text" format="string"/>
+    <attr name="circle_suffix_text" format="string"/>
+  </declare-styleable>
+
+</resources>

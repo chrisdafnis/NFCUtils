@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:text="Read Tag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/read_tag_button" />
+    <Button
+        android:text="Write Tag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/write_tag_button" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/write_text" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_view"
+        android:textColor="@android:color/holo_green_dark" />
+</LinearLayout>
