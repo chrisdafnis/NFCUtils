@@ -2,7 +2,7 @@
 using LinkOS.Plugin;
 using LinkOS.Plugin.Abstractions;
 
-namespace com.touchstar.chrisd
+namespace com.touchstar.chrisd.nfcutils
 {
     public interface IDiscoveryHandler : LinkOS.Plugin.Abstractions.IDiscoveryHandler
     {

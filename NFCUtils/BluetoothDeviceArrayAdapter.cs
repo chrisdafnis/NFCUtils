@@ -4,7 +4,7 @@ using Android.Content;
 using Android.Views;
 using Android.Widget;
 
-namespace com.touchstar.chrisd
+namespace com.touchstar.chrisd.nfcutils
 {
     public class BluetoothDeviceArrayAdapter : ArrayAdapter<BluetoothDevice>
     {

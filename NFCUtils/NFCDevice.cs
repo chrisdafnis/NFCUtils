@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace com.touchstar.chrisd
+namespace com.touchstar.chrisd.nfcutils
 {
     public interface INfcDevice
     {

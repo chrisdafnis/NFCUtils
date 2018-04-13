@@ -11,7 +11,7 @@ using Android.Views;
 using Android.Widget;
 using Zebra.Android.Discovery;
 
-namespace com.touchstar.chrisd
+namespace com.touchstar.chrisd.nfcutils
 {
     public class DiscoveredDevice : IDiscoveredDevice
     {
