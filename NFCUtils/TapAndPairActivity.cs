@@ -1,35 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading;
 using Android.App;
 using Android.Bluetooth;
 using Android.Content;
+using Android.Graphics;
 using Android.Nfc;
 using Android.OS;
 using Android.Text;
 using Android.Views;
 using Android.Widget;
-using Java.Lang.Reflect;
 using Zebra.Sdk.Printer.Discovery;
 using static Android.Widget.AdapterView;
 
 namespace com.touchstar.chrisd.nfcutils
 {
-    [Activity(Label = "Tap And Pair")]
+    [Activity(Label = "Tap And Pair", Name = "NFCUtils.NFCUtils.TapAndPairActivity")]
     public class TapAndPairActivity : Activity
     {
         private bool InstanceFieldsInitialized = false;
         internal Context context;
         private ListView listview;
         private TextView tvInfo;
-        private BluetoothDeviceArrayAdapter adapter;
         private BluetoothReceiver broadcastReceiver;
-        private AlertDialog successDialog;
         private NfcAdapter nfcAdapter;
         ObservableCollection<BluetoothDevice> _deviceList = new ObservableCollection<BluetoothDevice>();
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.DefaultAdapter;
         private INfcDevice nfcDevice = new NfcDevice();
+        System.Collections.IList deviceList = new List<BluetoothDevice>();
+        BluetoothDevice selectedDevice;
+        public event EventHandler OnDevicePaired;
+        public event EventHandler OnDeviceUnPaired;
+        public enum ActivityCode { NFCPair = 0, NFCPairMenu };
 
         public TapAndPairActivity()
         {
@@ -47,24 +49,83 @@ namespace com.touchstar.chrisd.nfcutils
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
-            base.OnCreate(savedInstanceState);
-            SetContentView(Resource.Layout.tap_and_pair_fragment);
-
-            listview = FindViewById<ListView>(Resource.Id.lvPairedDevices);
-            tvInfo = FindViewById<TextView>(Resource.Id.tvInfo);
-            adapter = new BluetoothDeviceArrayAdapter(context, PairedDevices);
-            listview.Adapter = (IListAdapter)adapter;
-
-            // Set up EventHandlers
-            listview.ItemClick += ListView_ItemClick;
-
-            nfcAdapter = NfcAdapter.GetDefaultAdapter(this);
+            //base.OnCreate(savedInstanceState);
+            //SetContentView(Resource.Layout.tap_and_pair_fragment);
 
             //broadcastReceiver = new BluetoothReceiver(this);
             //RegisterReceiver(broadcastReceiver, new IntentFilter(BluetoothDevice.ActionFound));
             //RegisterReceiver(broadcastReceiver, new IntentFilter(BluetoothDevice.ActionBondStateChanged));
-            //RegisterReceiver(broadcastReceiver, new IntentFilter(BluetoothDevice.ActionPairingRequest));
-            //RegisterReceiver(broadcastReceiver, new IntentFilter(BluetoothAdapter.ActionDiscoveryFinished));
+
+            //listview = FindViewById<ListView>(Resource.Id.lvPairedDevices);
+            //tvInfo = FindViewById<TextView>(Resource.Id.tvInfo);
+            //ObservableCollection<BluetoothDevice> deviceList = GetPairedDeviceCollection();
+            //listview.Adapter = new BluetoothDeviceArrayAdapter(context, Resource.Layout.row_layout, deviceList);
+
+            //var okButton = FindViewById<Button>(Resource.Id.buttonOK);
+            //okButton.Enabled = false;
+            //okButton.Click += OkButton_Click;
+            //OnDevicePaired += TapAndPairActivity_OnDevicePaired;
+            //// Set up EventHandlers
+            //listview.ItemClick += delegate (object sender, ItemClickEventArgs e)
+            //{
+            //    selectedDevice = deviceList[e.Position];
+            //    listview.SetSelection(e.Position);
+            //    (listview.Adapter as BluetoothDeviceArrayAdapter).SelectedIndex = e.Position;
+            //    //View selected = listview.SelectedView;
+            //    //selected.SetBackgroundColor(Color.LightBlue);
+            //    // select / unselect the correct row
+            //    //BluetoothDeviceArrayAdapter rowAdapter = (sender as ListView).Adapter as BluetoothDeviceArrayAdapter;
+            //    //if (rowAdapter != null)
+            //    //{
+            //    //    rowAdapter.ChangeBackgroundColor(sender as ListView, e);
+            //    //    if ((BluetoothDevice)(sender as ListView).GetItemAtPosition(e.Position) != null
+            //    //        && ((sender as ListView).Adapter as BluetoothDeviceArrayAdapter).SelectedIndex > -1)
+            //    //    {
+            //    //        selectedDevice = (BluetoothDevice)(sender as ListView).GetItemAtPosition(e.Position);
+            //    //        okButton.Enabled = true;
+            //    //    }
+            //    //    else
+            //    //    {
+            //    //        selectedDevice = null;
+            //    //        okButton.Enabled = false;
+            //    //    }
+            //    //}
+            //};
+            //listview.ItemSelected += delegate (object sender, ItemSelectedEventArgs e)
+            //{
+
+            //};
+
+            //nfcAdapter = NfcAdapter.GetDefaultAdapter(this);
+            //string operation = Intent.GetStringExtra("Operation");
+            //string activity = Intent.GetStringExtra("Activity");
+            //Toast.MakeText(Application.Context, string.Format("TapAndPair - {0} {1} {2} {3}", "Launch Intent Activity=", activity, ", Operation=", operation), ToastLength.Long).Show();
+
+        }
+
+        private void @delegate(object sender, ItemSelectedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void TapAndPairActivity_OnDevicePaired(object sender, EventArgs e)
+        {
+            selectedDevice = sender as BluetoothDevice;
+            var returnIntent = new Intent();
+            if (selectedDevice != null)
+            {
+                returnIntent.PutExtra("NFCDeviceName", selectedDevice.Name);
+                returnIntent.PutExtra("NFCDeviceAddress", selectedDevice.Address);
+                returnIntent.PutExtra("NFCDevice", selectedDevice);
+            }
+            else
+            {
+                returnIntent.PutExtra("NFCDevice", "No selected device");
+                returnIntent.PutExtra("NFCDevice", selectedDevice);
+            }
+
+            SetResult(Result.Ok, returnIntent);
+            Finish();
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -147,46 +208,6 @@ namespace com.touchstar.chrisd.nfcutils
             base.OnNewIntent(intent);
         }
 
-        public void FoundDevice(object device)
-        {
-            if (device is BluetoothDevice bluetoothDevice)
-            {
-                if (bluetoothDevice.Address != null)
-                {
-                    if ((bluetoothDevice.Name == nfcDevice.FriendlyName) && (bluetoothDevice.Address == nfcDevice.MacAddress))
-                    {
-                        (new Thread(() =>
-                        {
-                            try
-                            {
-                                Method m = bluetoothDevice.Class.GetMethod("createBond", null);
-                                var retVal = m.Invoke(bluetoothDevice, null);
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e.ToString());
-                                Console.Write(e.StackTrace);
-                            }
-                            finally
-                            {
-                                StopSearching(bluetoothDevice.Name);
-                                RefreshList();
-                            }
-                        })).Start();
-                    }
-                }
-            }
-        }
-
-        public void DiscoveryError(string s)
-        {
-            //Ignore network errors
-            if (!s.Contains("ENETUNREACH"))
-            {
-                StopSearching(null);
-            }
-        }
-
         /// <summary>
         /// Accepts data from an NFC touch and performs a search for any printers with matching information.
         /// </summary>
@@ -203,16 +224,20 @@ namespace com.touchstar.chrisd.nfcutils
                 {
                     payload += Convert.ToChar(b);
                 }
-                string deviceName = GetDeviceFriendlyName(payload);
-                string macAddress = GetDeviceMacAddress(payloadBytes);
-                if (IsDevicePaired(deviceName))
+                NfcDevice nfcDevice = new NfcDevice
                 {
-                    ShowAlreadyPaired(deviceName);
+                    FriendlyName = GetDeviceFriendlyName(payload),
+                    MacAddress = GetDeviceMacAddress(payloadBytes),
+                    PIN = GetDevicePIN(payload).Value
+                };
+                if (IsDevicePaired(nfcDevice.FriendlyName))
+                {
+                    ShowAlreadyPaired(nfcDevice.FriendlyName);
                 }
                 else
                 {
-                    StartSearching(deviceName);
-                    (new Thread(() =>
+                    StartSearching(nfcDevice.FriendlyName);
+                    RunOnUiThread(() =>
                     {
                         try
                         {
@@ -222,9 +247,7 @@ namespace com.touchstar.chrisd.nfcutils
                             if (!bluetoothAdapter.IsEnabled)
                                 throw new Exception("Bluetooth adapter is not enabled.");
 
-                            nfcDevice.FriendlyName = deviceName;
-                            nfcDevice.MacAddress = macAddress;
-                            bluetoothAdapter.StartDiscovery();
+                            PairDevice(nfcDevice);
                         }
                         catch (DiscoveryException e)
                         {
@@ -234,11 +257,38 @@ namespace com.touchstar.chrisd.nfcutils
                         finally
                         {
                         }
-                    })).Start();
+                    });
                 }
 
                 intent.RemoveExtra(NfcAdapter.ExtraNdefMessages);
             }
+        }
+
+        private void PairDevice(NfcDevice nfcDevice)
+        {
+            BluetoothDevice device = bluetoothAdapter.GetRemoteDevice(nfcDevice.MacAddress);
+
+            if (device != null)
+            {
+                if (device.CreateBond())
+                {
+                    OnDevicePaired(device, EventArgs.Empty);
+                }
+                else
+                {
+                    Toast.MakeText(context, string.Format("{0} {1}", GetString(Resource.String.MainActivity_PairFailed), nfcDevice.FriendlyName), ToastLength.Long).Show();
+                }
+            }
+            else
+            {
+                Toast.MakeText(context, string.Format("{0} {1}", GetString(Resource.String.MainActivity_PairFailed), nfcDevice.FriendlyName), ToastLength.Long).Show();
+            }
+        }
+
+        public void OnPairDevice(BluetoothDevice device, int state)
+        {
+            StopSearching(device.Name, state);
+            RefreshList();
         }
 
         /// <summary>
@@ -264,28 +314,30 @@ namespace com.touchstar.chrisd.nfcutils
         /// Updates UI elements to show that the app has stopped searching for the printer
         /// </summary>
         /// <param name="deviceName"> name of the printer that was being searched for </param>
-        private void StopSearching(string deviceName)
+        private void StopSearching(string deviceName, int state)
         {
             RunOnUiThread(() =>
             {
                 if (!(deviceName is null) && IsDevicePaired(deviceName))
                 {
-                    if (successDialog == null || !successDialog.IsShowing)
-                    {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        builder.SetTitle("Pairing Successful");
-                        builder.SetMessage(string.Format("{0} {1}", GetString(Resource.String.MainActivity_PairSuccessful), deviceName));
-                        builder.SetPositiveButton(Android.Resource.String.Yes, (c, ev) =>
-                        {
-                            Toast.MakeText(context, Resource.String.MainActivity_PairComplete, ToastLength.Long).Show();
-                        });
-                        successDialog = builder.Create();
-                        successDialog.Show();
-                    }
+                    Toast.MakeText(context, string.Format("{0} {1}", GetString(Resource.String.MainActivity_PairSuccessful), deviceName), ToastLength.Long).Show();
                 }
                 else
                 {
-                    Toast.MakeText(context, string.Format("{0} {1}", GetString(Resource.String.MainActivity_PairFailed), deviceName), ToastLength.Long).Show();
+                    switch (state)
+                    {
+                        case (int)Bond.None:
+                            Toast.MakeText(context, string.Format("{0} {1}", GetString(Resource.String.MainActivity_UnpairSuccessful), deviceName), ToastLength.Long).Show();
+                            break;
+                        case (int)Bond.Bonding:
+                            break;
+                        case (int)Bond.Bonded:
+                            Toast.MakeText(context, string.Format("{0} {1}", GetString(Resource.String.MainActivity_PairSuccessful), deviceName), ToastLength.Long).Show();
+                            break;
+                        default:
+                            Toast.MakeText(context, string.Format("{0} {1}", GetString(Resource.String.MainActivity_PairFailed), deviceName), ToastLength.Long).Show();
+                            break;
+                    }
                 }
 
                 tvInfo.Text = GetString(Resource.String.MainActivity_TapToPair);
@@ -318,9 +370,8 @@ namespace com.touchstar.chrisd.nfcutils
         {
             RunOnUiThread(() =>
             {
-                adapter.Clear();
-                adapter.AddAll(PairedDevices);
-                adapter.NotifyDataSetChanged();
+                ObservableCollection<BluetoothDevice> deviceList = GetPairedDeviceCollection();
+                listview.Adapter = new BluetoothDeviceArrayAdapter(context, Resource.Layout.row_layout, deviceList);
             });
         }
 
@@ -342,6 +393,21 @@ namespace com.touchstar.chrisd.nfcutils
                 }
             }
             return "";
+        }
+
+        private int? GetDevicePIN(string payload)
+        {
+            string parameterPin = "p=";
+            string[] payloadItems = payload.Split('&');
+            for (int i = 0; i < payloadItems.Length; i++)
+            {
+                //PIN
+                if (payloadItems[i].StartsWith(parameterPin, StringComparison.Ordinal))
+                {
+                    return Convert.ToInt32(payloadItems[i].Substring(parameterPin.Length));
+                }
+            }
+            return null;
         }
 
         private string GetDeviceMacAddress(byte[] payloadBytes)
@@ -387,7 +453,7 @@ namespace com.touchstar.chrisd.nfcutils
         /// Returns a list of all the printers currently paired to the Android device via bluetooth.
         /// </summary>
         /// <returns> a list of all the printers currently paired to the Android device via bluetooth. </returns>
-        private List<BluetoothDevice> PairedDevices
+        private ICollection<BluetoothDevice> PairedDevices
         {
             get
             {
@@ -396,44 +462,34 @@ namespace com.touchstar.chrisd.nfcutils
                 List<BluetoothDevice> pairedDevicesList = new List<BluetoothDevice>();
                 foreach (BluetoothDevice device in pairedDevices)
                 {
-                    pairedDevicesList.Add(device);
+                    _deviceList.Add(device);
                 }
-                return pairedDevicesList;
+                return _deviceList;
             }
         }
 
-        private void ListView_ItemClick(object sender, EventArgs e)//AdapterView.ItemClickEventArgs e)
+        private BluetoothDevice[] GetPairedDevices()
         {
-            ItemClickEventArgs args = e as ItemClickEventArgs;
-
-            BluetoothDevice item = (BluetoothDevice)(sender as ListView).GetItemAtPosition(args.Position);
-            if (item != null && item.Address != null)// && IsBluetoothPrinter(item))
+            ICollection<BluetoothDevice> pairedDevices = bluetoothAdapter.BondedDevices;
+            BluetoothDevice[] deviceArray = new BluetoothDevice[pairedDevices.Count];
+            int i = 0;
+            foreach (BluetoothDevice device in pairedDevices)
             {
-                new AlertDialog.Builder((sender as ListView).Context)
-                        .SetTitle("Unpair?")
-                        .SetMessage(Resource.String.MainActivity_UnpairDevice)
-                        .SetPositiveButton(Android.Resource.String.Yes, (c, ev) =>
-                        {
-                            try
-                            {
-                                Method m = item.Class.GetMethod("removeBond", null);
-                                m.Invoke(item, null);
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine(ex.ToString());
-                                Console.Write(ex.StackTrace);
-                            }
-
-                            // Toast.MakeText(context, "Clicked 'Yes'", ToastLength.Long).Show();
-                        })
-                        .SetNegativeButton(Android.Resource.String.No, (c, ev) =>
-                        {
-                            // Do nothing
-                            // Toast.MakeText(context, "Clicked 'No'", ToastLength.Long).Show();
-                        })
-                        .Show();
+                deviceArray[i] = device;
+                i++;
             }
+            return deviceArray;
+        }
+
+        private ObservableCollection<BluetoothDevice> GetPairedDeviceCollection()
+        {
+            ICollection<BluetoothDevice> pairedDevices = bluetoothAdapter.BondedDevices;
+            ObservableCollection<BluetoothDevice> deviceList = new ObservableCollection<BluetoothDevice>();
+            foreach (BluetoothDevice device in pairedDevices)
+            {
+                deviceList.Add(device);
+            }
+            return deviceList;
         }
 
         private void TextViewInfo_TextChanged(object sender, EventArgs e)
@@ -445,6 +501,25 @@ namespace com.touchstar.chrisd.nfcutils
                 if (args.Text.ToString() != view.Text)
                     view.Text = args.Text.ToString();
             }
+        }
+
+        private void OkButton_Click(object sender, EventArgs e)
+        {
+            var returnIntent = new Intent();
+            if (selectedDevice != null)
+            {
+                returnIntent.PutExtra("NFCDeviceName", selectedDevice.Name);
+                returnIntent.PutExtra("NFCDeviceAddress", selectedDevice.Address);
+                returnIntent.PutExtra("NFCDevice", selectedDevice);
+            }
+            else
+            {
+                returnIntent.PutExtra("NFCDevice", "No selected device");
+                returnIntent.PutExtra("NFCDevice", selectedDevice);
+            }
+
+            SetResult(Result.Ok, returnIntent);
+            Finish();
         }
     }
 }

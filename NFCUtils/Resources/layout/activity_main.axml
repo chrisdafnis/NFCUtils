@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_menu_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <Button
+    <!--<Button
         android:text="Tap And Pair"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,5 +21,5 @@
         android:layout_height="wrap_content"
         android:id="@+id/bluetooth_utils_button"
         android:layout_below="@id/nfc_utils_button"
-        layout_heightPercent="25%" />
+        layout_heightPercent="25%" />-->
 </RelativeLayout>

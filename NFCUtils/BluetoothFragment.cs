@@ -11,16 +11,24 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using static Android.Widget.AdapterView;
 
 namespace com.touchstar.chrisd.nfcutils
 {
+    [Register("com.touchstar.chrisd.nfcutils.BluetoothFragment")]
     public class BluetoothFragment : VisibleFragment
     {
-        OnButtonClicked mButtonClicked;
-        public interface OnButtonClicked
+        public static readonly string FRAGMENT_TAG_MAIN_MENU = "MainMenuFragment";
+        public static readonly string FRAGMENT_TAG_NFC_PAIR = "TapAndPairFragment";
+        public static readonly string FRAGMENT_TAG_NFC_UTILS = "NfcUtilsFragment";
+        public static readonly string FRAGMENT_TAG_BLUETOOTH = "BluetoothFragment";
+
+        IOnButtonClicked mButtonClicked;
+        public interface IOnButtonClicked
         {
-            void BluetoothFragmentOnButtonClicked(int requestCode, int result, BluetoothDevice bluetoothDevice);
+            void BluetoothFragmentOnOKButtonClicked(int requestCode, int result, BluetoothDevice bluetoothDevice);
         }
+        private View parentView;
 
         public static readonly string ARG_REQUEST_BLUETOOTH_ACTION = "bluetooth_action";
         public static readonly string ARG_REQUEST_CODE = "request_code";
@@ -48,8 +56,8 @@ namespace com.touchstar.chrisd.nfcutils
         BluetoothReceiver mBluetoothReceiver;
         ArrayAdapter<String> mBluetoothAdapter;
         Button mButtonScan;
-        bool mScanStarted;
-        bool mSuccess;
+        bool mScanStarted = false;
+        bool mSuccess = false;
         BluetoothAction mBluetoothAction;
         ICollection<BluetoothDevice> mBluetoothDevices;
         ListView mDeviceFoundList;
@@ -57,13 +65,27 @@ namespace com.touchstar.chrisd.nfcutils
         Bluetooth mBluetooth;
         int mRequestCode;
 
+        OnButtonClicked mButtonOkClicked;
+        public interface OnButtonClicked
+        {
+            void BluetoothFragmentOnOKButtonClicked(Intent result, int requestCode);
+        }
+
+        public ICollection<BluetoothDevice> BluetoothDevices
+        {
+            get { return mBluetoothDevices; }
+            set { mBluetoothDevices = value; }
+        }
+
         public static BluetoothFragment NewInstance(int requestCode)
         {
 
             Bundle args = new Bundle();
             args.PutInt(ARG_REQUEST_CODE, requestCode);
-            BluetoothFragment fragment = new BluetoothFragment();
-            fragment.Arguments = args;
+            BluetoothFragment fragment = new BluetoothFragment
+            {
+                Arguments = args
+            };
             return fragment;
         }
 
@@ -85,8 +107,8 @@ namespace com.touchstar.chrisd.nfcutils
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            View v = inflater.Inflate(Resource.Layout.bluetooth_utils_fragment, container, false);
-            mButtonScan = (Button)v.FindViewById(Resource.Id.search_button);
+            parentView = inflater.Inflate(Resource.Layout.bluetooth_utils_fragment, container, false);
+            mButtonScan = parentView.FindViewById<Button>(Resource.Id.search_button);
             mButtonScan.Text = "Search";
             mButtonScan.Click += delegate
             {
@@ -105,7 +127,7 @@ namespace com.touchstar.chrisd.nfcutils
 
             mBluetoothDevices.Clear();
 
-            mDeviceFoundList = (ListView)v.FindViewById(Resource.Id.device_list);
+            mDeviceFoundList = parentView.FindViewById<ListView>(Resource.Id.device_list);
             mDeviceFoundList.Adapter = mBluetoothAdapter;
             mDeviceFoundList.ItemClick += delegate (object sender, AdapterView.ItemClickEventArgs e)
             {
@@ -117,7 +139,7 @@ namespace com.touchstar.chrisd.nfcutils
 
                     if (mBluetooth.IsDevicePaired())
                     {
-                        Toast.MakeText(Context, mBluetoothDevice.Name + " " + Resource.String.MainActivity_AlreadyPaired, ToastLength.Long).Show();
+                        Toast.MakeText(parentView.Context, mBluetoothDevice.Name + " " + GetString(Resource.String.MainActivity_AlreadyPaired), ToastLength.Long).Show();
                     }
                     else
                     {
@@ -158,15 +180,12 @@ namespace com.touchstar.chrisd.nfcutils
 
                     break;
             }
-            return v;
+            return parentView;
         }
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             base.OnViewCreated(view, savedInstanceState);
-
-
-
         }
 
         public override void OnResume()
@@ -176,19 +195,20 @@ namespace com.touchstar.chrisd.nfcutils
         public override void OnStart()
         {
             base.OnStart();
-            mBluetoothReceiver = new BluetoothReceiver(this);
+            //mBluetoothReceiver = new BluetoothReceiver(this.Activity as MainActivity);
 
-            IntentFilter filter = new IntentFilter(BluetoothDevice.ActionFound);
-            filter.AddAction(BluetoothAdapter.ActionDiscoveryFinished);
-            filter.AddAction(BluetoothDevice.ActionBondStateChanged);
-            filter.AddAction(BluetoothAdapter.ActionDiscoveryStarted);
-            Activity.RegisterReceiver(mBluetoothReceiver, filter);
+            //IntentFilter filter = new IntentFilter(BluetoothDevice.ActionFound);
+            //filter.AddAction(BluetoothAdapter.ActionDiscoveryFinished);
+            //filter.AddAction(BluetoothDevice.ActionPairingRequest);
+            //filter.AddAction(BluetoothDevice.ActionBondStateChanged);
+            //filter.AddAction(BluetoothAdapter.ActionDiscoveryStarted);
+            //Activity.RegisterReceiver(mBluetoothReceiver, filter);
         }
 
         public override void OnStop()
         {
             base.OnStop();
-            Activity.UnregisterReceiver(mBluetoothReceiver);
+            //Activity.UnregisterReceiver(mBluetoothReceiver);
 
         }
         public override void OnDestroy()
@@ -202,34 +222,33 @@ namespace com.touchstar.chrisd.nfcutils
 
             try
             {
-                mButtonClicked = (OnButtonClicked)context;
+                mButtonOkClicked = (OnButtonClicked)context;
             }
             catch (NotImplementedException e)
             {
-                throw new Exception(e.Message + " - Must implement OnRecordSelected");
+                throw new Exception(e.Message + " - Must implement OnButtonClicked");
             }
-
         }
 
         public override void OnDetach()
         {
             base.OnDetach();
 
-            mButtonClicked = null;
+            //mButtonClicked = null;
         }
-        private void SendResult(int requestCode, int result, BluetoothDevice bluetoothDevice)
-        {
-            // try and work out if fragment called from an activity or another fragment
-            if (TargetFragment == null)
-            {
-                mButtonClicked.BluetoothFragmentOnButtonClicked(requestCode, result, bluetoothDevice);
-                return;
-            }
+        //private void SendResult(int requestCode, int result, BluetoothDevice bluetoothDevice)
+        //{
+        //    // try and work out if fragment called from an activity or another fragment
+        //    //if (TargetFragment == null)
+        //    //{
+        //    //    mButtonClicked.BluetoothFragmentOnOKButtonClicked(requestCode, result, bluetoothDevice);
+        //    //    return;
+        //    //}
 
-            TargetFragment.OnActivityResult(TargetRequestCode, result, null);
+        //    //TargetFragment.OnActivityResult(TargetRequestCode, result, null);
 
 
-        }
+        //}
 
         #region Called from broadcastreceiver
         public void OnDeviceFound(BluetoothDevice bluetoothDevice, BluetoothClass bluetoothClass)
@@ -279,32 +298,140 @@ namespace com.touchstar.chrisd.nfcutils
 
         public void OnPaired(bool paired, Bond state, bool success)
         {
-            if (!success)
+            Activity.RunOnUiThread(() =>
             {
-                mSuccess = false;
-                if (mBluetoothAction == BluetoothAction.PairDevice)
+                if (!success)
                 {
-                    Toast.MakeText(Context, Resource.String.MainActivity_PairFailed + " " + mBluetoothDevice.Name, ToastLength.Long).Show();
+                    mSuccess = false;
+                    if (mBluetoothAction == BluetoothAction.PairDevice)
+                    {
+                        Toast.MakeText(parentView.Context, GetString(Resource.String.MainActivity_PairFailed) + " " + mBluetoothDevice.Name, ToastLength.Long).Show();
+                    }
+                    else
+                    {
+                        Toast.MakeText(parentView.Context, GetString(Resource.String.MainActivity_PairFailed) + " " + mBluetoothDevice.Name, ToastLength.Long).Show();
+                    }
+
+                    return;
+                }
+
+                mSuccess = true;
+
+                if (paired)
+                {
+                    Toast.MakeText(parentView.Context, GetString(Resource.String.MainActivity_PairSuccessful) + " " + mBluetoothDevice.Name, ToastLength.Long).Show();
                 }
                 else
                 {
-                    Toast.MakeText(Context, Resource.String.MainActivity_PairFailed + " " + mBluetoothDevice.Name, ToastLength.Long).Show();
+                    Toast.MakeText(parentView.Context, GetString(Resource.String.MainActivity_PairFailed) + " " + mBluetoothDevice.Name, ToastLength.Long).Show();
                 }
-
-                return;
-            }
-
-            mSuccess = true;
-
-            if (paired)
-            {
-                Toast.MakeText(Context, Resource.String.MainActivity_PairSuccessful + " " + mBluetoothDevice.Name, ToastLength.Long).Show();
-            }
-            else
-            {
-                Toast.MakeText(Context, Resource.String.MainActivity_PairFailed + " " + mBluetoothDevice.Name, ToastLength.Long).Show();
-            }
+            });
         }
         #endregion
+
+        public void BluetoothDiscoveryFinished()
+        {
+            Activity.RunOnUiThread(() =>
+            {
+                ProgressBar pbSearching = parentView.FindViewById<ProgressBar>(Resource.Id.pbSearching);
+                pbSearching.Visibility = ViewStates.Gone;
+            });
+        }
+
+        public void BluetoothDiscoveryStarted()
+        {
+            mBluetoothDevices.Clear();
+
+            Activity.RunOnUiThread(() =>
+            {
+                ProgressBar pbSearching = parentView.FindViewById<ProgressBar>(Resource.Id.pbSearching);
+                pbSearching.Visibility = ViewStates.Visible;
+            });
+        }
+
+        private void BluetoothDeviceFound(BluetoothDevice device)
+        {
+            if (device != null)
+            {
+                if (!mBluetoothDevices.Contains<BluetoothDevice>(device))
+                    mBluetoothDevices.Add(device);
+            }
+        }
+
+        public override void OnPause()
+        {
+            base.OnPause();
+        }
+
+        private void SearchButton_OnClick(object sender, EventArgs e)
+        {
+            mBluetoothAction = BluetoothAction.GetListOfAvailableDevices;
+            mScanStarted = true;
+
+            // cancel any requests which may be in progress
+            mBluetooth.Adapter.CancelDiscovery();
+            mBluetooth.Adapter.StartDiscovery();
+        }
+
+        void DeviceList_ItemClick(object sender, EventArgs e)
+        {
+            ItemClickEventArgs args = e as ItemClickEventArgs;
+            BluetoothDevice device = mBluetoothDevices.ElementAt<BluetoothDevice>(args.Position);
+            if (device != null)
+            {
+                try
+                {
+                    var retVal = device.CreateBond();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    Console.Write(ex.StackTrace);
+                }
+
+            }
+        }
+
+        /// <summary>
+		/// Refreshed the list of paired bluetooth devices
+		/// </summary>
+		public void RefreshList()
+        {
+            Activity.RunOnUiThread(() =>
+            {
+                //_arrayAdapter.Clear();
+                //_arrayAdapter.AddAll(PairedDevices);
+                //_arrayAdapter.NotifyDataSetChanged();
+            });
+        }
+
+        /// <summary>
+        /// Returns a list of all the printers currently paired to the Android device via bluetooth.
+        /// </summary>
+        /// <returns> a list of all the printers currently paired to the Android device via bluetooth. </returns>
+        private List<BluetoothDevice> PairedDevices
+        {
+            get
+            {
+                BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.DefaultAdapter;
+                ICollection<BluetoothDevice> pairedDevices = mBluetoothAdapter.BondedDevices;
+                List<BluetoothDevice> pairedDevicesList = new List<BluetoothDevice>();
+                foreach (BluetoothDevice device in pairedDevices)
+                {
+                    pairedDevicesList.Add(device);
+                }
+                return pairedDevicesList;
+            }
+        }
+
+        public Bundle Arguments { get; private set; }
+
+        public void FoundDevice(object device)
+        {
+            if (device is BluetoothDevice bluetoothDevice)
+            {
+                BluetoothDeviceFound(bluetoothDevice);
+            }
+        }
     }
 }

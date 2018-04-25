@@ -17,21 +17,14 @@ using static Android.Widget.AdapterView;
 namespace com.touchstar.chrisd.nfcutils
 {
     [Activity(Label = "Bluetooth Utilities")]
-    public class BluetoothUtilsActivity : SingleFragmentActivity, BluetoothFragment.OnButtonClicked
+    public class BluetoothUtilsActivity : SingleFragmentActivity, BluetoothFragment.IOnButtonClicked
     {
-        //ObservableCollection<BluetoothDevice> _deviceList = new ObservableCollection<BluetoothDevice>();
-        //BluetoothAdapter _bluetoothAdapter;
-        //private BluetoothDeviceArrayAdapter _arrayAdapter;
-        //BluetoothReceiver _bluetoothDeviceReceiver;
-        //Bluetooth _bluetooth;
-        Button _searchButton;
-        //ListView _deviceListView;
         internal Context context;
-        BluetoothReceiver mBluetoothReceiver;
         ArrayAdapter<String> mBluetoothAdapter;
         ICollection<BluetoothDevice> mBluetoothDevices;
         BluetoothDevice mBluetoothDevice;
         Bluetooth mBluetooth;
+        Button mButtonOk;
         BluetoothAction mBluetoothAction;
         bool mSuccess;
         bool mScanStarted;
@@ -77,7 +70,7 @@ namespace com.touchstar.chrisd.nfcutils
             context = this;
         }
 
-        protected override Android.Support.V4.App.Fragment CreateFragment()
+        protected override Fragment CreateFragment()
         {
             return BluetoothFragment.NewInstance(0);
 
@@ -258,7 +251,7 @@ namespace com.touchstar.chrisd.nfcutils
             }
         }
 
-        public void BluetoothFragmentOnButtonClicked(int requestCode, int result, BluetoothDevice device)
+        public void BluetoothFragmentOnOKButtonClicked(int requestCode, int result, BluetoothDevice device)
         {
             if (result == (int)Result.Ok && device != null)
             {

@@ -12,6 +12,7 @@ namespace com.touchstar.chrisd.nfcutils
     {
         public String FriendlyName { get; set; }
         public String MacAddress { get; set; }
+        public int PIN { get; set; }
     }
 
 }

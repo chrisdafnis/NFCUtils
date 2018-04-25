@@ -2329,8 +2329,8 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a0024
 			public const int ALT = 2131361828;
 			
-			// aapt resource value: 0x7f0a006d
-			public const int Address = 2131361901;
+			// aapt resource value: 0x7f0a006c
+			public const int Address = 2131361900;
 			
 			// aapt resource value: 0x7f0a0025
 			public const int CTRL = 2131361829;
@@ -2341,8 +2341,8 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a0027
 			public const int META = 2131361831;
 			
-			// aapt resource value: 0x7f0a006c
-			public const int Name = 2131361900;
+			// aapt resource value: 0x7f0a006b
+			public const int Name = 2131361899;
 			
 			// aapt resource value: 0x7f0a0028
 			public const int SHIFT = 2131361832;
@@ -2350,8 +2350,8 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a0029
 			public const int SYM = 2131361833;
 			
-			// aapt resource value: 0x7f0a0077
-			public const int action0 = 2131361911;
+			// aapt resource value: 0x7f0a0079
+			public const int action0 = 2131361913;
 			
 			// aapt resource value: 0x7f0a0057
 			public const int action_bar = 2131361879;
@@ -2374,17 +2374,17 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a0035
 			public const int action_bar_title = 2131361845;
 			
-			// aapt resource value: 0x7f0a0074
-			public const int action_container = 2131361908;
+			// aapt resource value: 0x7f0a0076
+			public const int action_container = 2131361910;
 			
 			// aapt resource value: 0x7f0a0058
 			public const int action_context_bar = 2131361880;
 			
-			// aapt resource value: 0x7f0a007b
-			public const int action_divider = 2131361915;
+			// aapt resource value: 0x7f0a007d
+			public const int action_divider = 2131361917;
 			
-			// aapt resource value: 0x7f0a0075
-			public const int action_image = 2131361909;
+			// aapt resource value: 0x7f0a0077
+			public const int action_image = 2131361911;
 			
 			// aapt resource value: 0x7f0a0002
 			public const int action_menu_divider = 2131361794;
@@ -2401,11 +2401,11 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a0037
 			public const int action_mode_close_button = 2131361847;
 			
-			// aapt resource value: 0x7f0a0076
-			public const int action_text = 2131361910;
+			// aapt resource value: 0x7f0a0078
+			public const int action_text = 2131361912;
 			
-			// aapt resource value: 0x7f0a0084
-			public const int actions = 2131361924;
+			// aapt resource value: 0x7f0a0086
+			public const int actions = 2131361926;
 			
 			// aapt resource value: 0x7f0a0038
 			public const int activity_chooser_view_content = 2131361848;
@@ -2428,29 +2428,32 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a0032
 			public const int blocking = 2131361842;
 			
-			// aapt resource value: 0x7f0a0069
-			public const int bluetooth_utils_button = 2131361897;
+			// aapt resource value: 0x7f0a006f
+			public const int bluetooth_utils_button = 2131361903;
 			
 			// aapt resource value: 0x7f0a002f
 			public const int bottom = 2131361839;
 			
+			// aapt resource value: 0x7f0a006a
+			public const int buttonOK = 2131361898;
+			
 			// aapt resource value: 0x7f0a003e
 			public const int buttonPanel = 2131361854;
 			
-			// aapt resource value: 0x7f0a0078
-			public const int cancel_action = 2131361912;
+			// aapt resource value: 0x7f0a007a
+			public const int cancel_action = 2131361914;
 			
 			// aapt resource value: 0x7f0a004e
 			public const int checkbox = 2131361870;
 			
-			// aapt resource value: 0x7f0a0080
-			public const int chronometer = 2131361920;
+			// aapt resource value: 0x7f0a0082
+			public const int chronometer = 2131361922;
 			
 			// aapt resource value: 0x7f0a002b
 			public const int collapseActionView = 2131361835;
 			
-			// aapt resource value: 0x7f0a0087
-			public const int container = 2131361927;
+			// aapt resource value: 0x7f0a0089
+			public const int container = 2131361929;
 			
 			// aapt resource value: 0x7f0a0041
 			public const int contentPanel = 2131361857;
@@ -2467,8 +2470,8 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a003b
 			public const int default_activity_button = 2131361851;
 			
-			// aapt resource value: 0x7f0a006b
-			public const int device_list = 2131361899;
+			// aapt resource value: 0x7f0a0069
+			public const int device_list = 2131361897;
 			
 			// aapt resource value: 0x7f0a0012
 			public const int disableHome = 2131361810;
@@ -2479,8 +2482,8 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a0022
 			public const int end = 2131361826;
 			
-			// aapt resource value: 0x7f0a0086
-			public const int end_padder = 2131361926;
+			// aapt resource value: 0x7f0a0088
+			public const int end_padder = 2131361928;
 			
 			// aapt resource value: 0x7f0a0039
 			public const int expand_activities_button = 2131361849;
@@ -2503,8 +2506,8 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a003d
 			public const int icon = 2131361853;
 			
-			// aapt resource value: 0x7f0a0085
-			public const int icon_group = 2131361925;
+			// aapt resource value: 0x7f0a0087
+			public const int icon_group = 2131361927;
 			
 			// aapt resource value: 0x7f0a002c
 			public const int ifRoom = 2131361836;
@@ -2512,8 +2515,8 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a003a
 			public const int image = 2131361850;
 			
-			// aapt resource value: 0x7f0a0081
-			public const int info = 2131361921;
+			// aapt resource value: 0x7f0a0083
+			public const int info = 2131361923;
 			
 			// aapt resource value: 0x7f0a0034
 			public const int italic = 2131361844;
@@ -2530,17 +2533,20 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a003c
 			public const int list_item = 2131361852;
 			
-			// aapt resource value: 0x7f0a008c
-			public const int lvPairedDevices = 2131361932;
-			
-			// aapt resource value: 0x7f0a007a
-			public const int media_actions = 2131361914;
-			
 			// aapt resource value: 0x7f0a008e
-			public const int menu_refresh = 2131361934;
+			public const int lvPairedDevices = 2131361934;
 			
-			// aapt resource value: 0x7f0a008d
-			public const int message = 2131361933;
+			// aapt resource value: 0x7f0a0067
+			public const int main_menu_container = 2131361895;
+			
+			// aapt resource value: 0x7f0a007c
+			public const int media_actions = 2131361916;
+			
+			// aapt resource value: 0x7f0a0090
+			public const int menu_refresh = 2131361936;
+			
+			// aapt resource value: 0x7f0a008f
+			public const int message = 2131361935;
 			
 			// aapt resource value: 0x7f0a0023
 			public const int middle = 2131361827;
@@ -2551,11 +2557,11 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a002d
 			public const int never = 2131361837;
 			
-			// aapt resource value: 0x7f0a0067
-			public const int nfc_pair_button = 2131361895;
+			// aapt resource value: 0x7f0a006d
+			public const int nfc_pair_button = 2131361901;
 			
-			// aapt resource value: 0x7f0a0068
-			public const int nfc_utils_button = 2131361896;
+			// aapt resource value: 0x7f0a006e
+			public const int nfc_utils_button = 2131361902;
 			
 			// aapt resource value: 0x7f0a0014
 			public const int none = 2131361812;
@@ -2563,26 +2569,26 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a0010
 			public const int normal = 2131361808;
 			
-			// aapt resource value: 0x7f0a0083
-			public const int notification_background = 2131361923;
+			// aapt resource value: 0x7f0a0085
+			public const int notification_background = 2131361925;
 			
-			// aapt resource value: 0x7f0a007d
-			public const int notification_main_column = 2131361917;
+			// aapt resource value: 0x7f0a007f
+			public const int notification_main_column = 2131361919;
 			
-			// aapt resource value: 0x7f0a007c
-			public const int notification_main_column_container = 2131361916;
+			// aapt resource value: 0x7f0a007e
+			public const int notification_main_column_container = 2131361918;
 			
-			// aapt resource value: 0x7f0a006f
-			public const int pair_button = 2131361903;
+			// aapt resource value: 0x7f0a0071
+			public const int pair_button = 2131361905;
 			
-			// aapt resource value: 0x7f0a006e
-			public const int pair_device_text_view = 2131361902;
+			// aapt resource value: 0x7f0a0070
+			public const int pair_device_text_view = 2131361904;
 			
 			// aapt resource value: 0x7f0a0040
 			public const int parentPanel = 2131361856;
 			
-			// aapt resource value: 0x7f0a006a
-			public const int pbSearching = 2131361898;
+			// aapt resource value: 0x7f0a0068
+			public const int pbSearching = 2131361896;
 			
 			// aapt resource value: 0x7f0a0005
 			public const int progress_circular = 2131361797;
@@ -2593,14 +2599,14 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a0050
 			public const int radio = 2131361872;
 			
-			// aapt resource value: 0x7f0a0070
-			public const int read_tag_button = 2131361904;
+			// aapt resource value: 0x7f0a0072
+			public const int read_tag_button = 2131361906;
 			
-			// aapt resource value: 0x7f0a0082
-			public const int right_icon = 2131361922;
+			// aapt resource value: 0x7f0a0084
+			public const int right_icon = 2131361924;
 			
-			// aapt resource value: 0x7f0a007e
-			public const int right_side = 2131361918;
+			// aapt resource value: 0x7f0a0080
+			public const int right_side = 2131361920;
 			
 			// aapt resource value: 0x7f0a001b
 			public const int screen = 2131361819;
@@ -2674,8 +2680,8 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a001e
 			public const int src_over = 2131361822;
 			
-			// aapt resource value: 0x7f0a0079
-			public const int status_bar_latest_event_content = 2131361913;
+			// aapt resource value: 0x7f0a007b
+			public const int status_bar_latest_event_content = 2131361915;
 			
 			// aapt resource value: 0x7f0a0051
 			public const int submenuarrow = 2131361873;
@@ -2701,14 +2707,14 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a0044
 			public const int textSpacerNoTitle = 2131361860;
 			
-			// aapt resource value: 0x7f0a008a
-			public const int textView = 2131361930;
+			// aapt resource value: 0x7f0a008c
+			public const int textView = 2131361932;
 			
-			// aapt resource value: 0x7f0a0073
-			public const int text_view = 2131361907;
+			// aapt resource value: 0x7f0a0075
+			public const int text_view = 2131361909;
 			
-			// aapt resource value: 0x7f0a007f
-			public const int time = 2131361919;
+			// aapt resource value: 0x7f0a0081
+			public const int time = 2131361921;
 			
 			// aapt resource value: 0x7f0a000e
 			public const int title = 2131361806;
@@ -2725,14 +2731,14 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a0049
 			public const int topPanel = 2131361865;
 			
-			// aapt resource value: 0x7f0a0089
-			public const int tvDeviceAddress = 2131361929;
-			
-			// aapt resource value: 0x7f0a0088
-			public const int tvDeviceName = 2131361928;
-			
 			// aapt resource value: 0x7f0a008b
-			public const int tvInfo = 2131361931;
+			public const int tvDeviceAddress = 2131361931;
+			
+			// aapt resource value: 0x7f0a008a
+			public const int tvDeviceName = 2131361930;
+			
+			// aapt resource value: 0x7f0a008d
+			public const int tvInfo = 2131361933;
 			
 			// aapt resource value: 0x7f0a001f
 			public const int uniform = 2131361823;
@@ -2749,11 +2755,11 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f0a0020
 			public const int wrap_content = 2131361824;
 			
-			// aapt resource value: 0x7f0a0071
-			public const int write_tag_button = 2131361905;
+			// aapt resource value: 0x7f0a0073
+			public const int write_tag_button = 2131361907;
 			
-			// aapt resource value: 0x7f0a0072
-			public const int write_text = 2131361906;
+			// aapt resource value: 0x7f0a0074
+			public const int write_text = 2131361908;
 			
 			static Id()
 			{
@@ -2996,17 +3002,17 @@ namespace com.touchstar.chrisd
 		public partial class String
 		{
 			
-			// aapt resource value: 0x7f050028
-			public const int MainActivity_AlreadyPaired = 2131034152;
+			// aapt resource value: 0x7f050029
+			public const int MainActivity_AlreadyPaired = 2131034153;
 			
 			// aapt resource value: 0x7f050023
 			public const int MainActivity_AttemptToPair = 2131034147;
 			
-			// aapt resource value: 0x7f050026
-			public const int MainActivity_PairComplete = 2131034150;
+			// aapt resource value: 0x7f050027
+			public const int MainActivity_PairComplete = 2131034151;
 			
-			// aapt resource value: 0x7f050025
-			public const int MainActivity_PairFailed = 2131034149;
+			// aapt resource value: 0x7f050026
+			public const int MainActivity_PairFailed = 2131034150;
 			
 			// aapt resource value: 0x7f050024
 			public const int MainActivity_PairSuccessful = 2131034148;
@@ -3014,17 +3020,20 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f050021
 			public const int MainActivity_PairedDevices = 2131034145;
 			
-			// aapt resource value: 0x7f050027
-			public const int MainActivity_PrintPrompt = 2131034151;
+			// aapt resource value: 0x7f050028
+			public const int MainActivity_PrintPrompt = 2131034152;
 			
-			// aapt resource value: 0x7f050029
-			public const int MainActivity_PrintTestPage = 2131034153;
+			// aapt resource value: 0x7f05002a
+			public const int MainActivity_PrintTestPage = 2131034154;
 			
 			// aapt resource value: 0x7f050022
 			public const int MainActivity_TapToPair = 2131034146;
 			
-			// aapt resource value: 0x7f05002a
-			public const int MainActivity_UnpairDevice = 2131034154;
+			// aapt resource value: 0x7f05002b
+			public const int MainActivity_UnpairDevice = 2131034155;
+			
+			// aapt resource value: 0x7f050025
+			public const int MainActivity_UnpairSuccessful = 2131034149;
 			
 			// aapt resource value: 0x7f050000
 			public const int abc_action_bar_home_description = 2131034112;
