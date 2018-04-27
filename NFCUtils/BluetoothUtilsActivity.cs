@@ -17,10 +17,10 @@ using static Android.Widget.AdapterView;
 namespace com.touchstar.chrisd.nfcutils
 {
     [Activity(Label = "Bluetooth Utilities")]
-    public class BluetoothUtilsActivity : SingleFragmentActivity, BluetoothFragment.IOnButtonClicked
+    public class BluetoothUtilsActivity : /*SingleFragment*/Activity, BluetoothFragment.IOnButtonClicked
     {
         internal Context context;
-        ArrayAdapter<String> mBluetoothAdapter;
+        ArrayAdapter<String> mBluetoothArrayAdapter;
         ICollection<BluetoothDevice> mBluetoothDevices;
         BluetoothDevice mBluetoothDevice;
         Bluetooth mBluetooth;
@@ -30,6 +30,9 @@ namespace com.touchstar.chrisd.nfcutils
         bool mScanStarted;
         private bool InstanceFieldsInitialized = false;
         int mRequestCode;
+        BluetoothReceiver mBluetoothReceiver;
+        ObservableCollection<BluetoothDevice> _deviceList = new ObservableCollection<BluetoothDevice>();
+        BluetoothAdapter mBluetoothAdapter;
 
         public static readonly string ARG_REQUEST_BLUETOOTH_ACTION = "bluetooth_action";
         public static readonly string ARG_REQUEST_CODE = "request_code";
@@ -70,12 +73,50 @@ namespace com.touchstar.chrisd.nfcutils
             context = this;
         }
 
-        protected override Fragment CreateFragment()
-        {
-            return BluetoothFragment.NewInstance(0);
+        //protected override Fragment CreateFragment()
+        //{
+        //    return null;//BluetoothFragment.NewInstance(this as MainActivity);
 
+        //}
+        protected override void OnCreate(Bundle bundle)
+        {
+            base.OnCreate(bundle);
+            SetContentView(Resource.Layout.bluetooth_utils_fragment);
+            Button search = FindViewById<Button>(Resource.Id.search_button);
+            ListView listview = FindViewById<ListView>(Resource.Id.device_list);
+
+            if (mBluetooth == null)
+            {
+                mBluetooth = new Bluetooth();
+            }
+            mBluetoothAdapter = BluetoothAdapter.DefaultAdapter;
+            mBluetoothReceiver = new BluetoothReceiver(this);
+            IntentFilter filter = new IntentFilter(BluetoothDevice.ActionFound);
+            filter.AddAction(BluetoothAdapter.ActionDiscoveryFinished);
+            filter.AddAction(BluetoothDevice.ActionPairingRequest);
+            filter.AddAction(BluetoothDevice.ActionBondStateChanged);
+            filter.AddAction(BluetoothAdapter.ActionDiscoveryStarted);
+            RegisterReceiver(mBluetoothReceiver, filter);
+            RegisterReceiver(mBluetoothReceiver, new IntentFilter(BluetoothDevice.ActionBondStateChanged));
+            RegisterReceiver(mBluetoothReceiver, new IntentFilter(BluetoothAdapter.ActionDiscoveryFinished));
+            RegisterReceiver(mBluetoothReceiver, new IntentFilter(BluetoothAdapter.ActionDiscoveryStarted));
+            RegisterReceiver(mBluetoothReceiver, new IntentFilter(BluetoothDevice.ActionFound));
+            RegisterReceiver(mBluetoothReceiver, new IntentFilter(BluetoothDevice.ActionPairingRequest));
+            RegisterReceiver(mBluetoothReceiver, new IntentFilter(BluetoothAdapter.ActionRequestDiscoverable));
+
+            search.Click += delegate 
+            {
+                mBluetoothAction = BluetoothAction.GetListOfAvailableDevices;
+                mScanStarted = true;
+                // cancel any requests which may be in progress
+                mBluetoothAdapter.CancelDiscovery();
+                mBluetoothAdapter.StartDiscovery();
+            };
+            listview.ItemClick += delegate 
+            {
+            };
         }
-        
+
         #region Called from broadcastreceiver
         public void OnDeviceFound(BluetoothDevice bluetoothDevice, BluetoothClass bluetoothClass)
         {
@@ -96,8 +137,8 @@ namespace com.touchstar.chrisd.nfcutils
             if (!found)
             {
                 mBluetoothDevices.Add(bluetoothDevice);
-                mBluetoothAdapter.Add(String.Format("{0} # {1}", bluetoothDevice.Name, bluetoothDevice.Address));
-                mBluetoothAdapter.NotifyDataSetChanged();
+                mBluetoothArrayAdapter.Add(String.Format("{0} # {1}", bluetoothDevice.Name, bluetoothDevice.Address));
+                mBluetoothArrayAdapter.NotifyDataSetChanged();
             }
         }
         public void OnScanStarted()
@@ -179,16 +220,6 @@ namespace com.touchstar.chrisd.nfcutils
             base.OnPause();
         }
 
-        private void SearchButton_OnClick(object sender, EventArgs e)
-        {
-            mBluetoothAction = BluetoothAction.GetListOfAvailableDevices;
-            mScanStarted = true;
-
-            // cancel any requests which may be in progress
-            mBluetooth.Adapter.CancelDiscovery();
-            mBluetooth.Adapter.StartDiscovery();
-        }
-
         void DeviceList_ItemClick(object sender, EventArgs e)
         {
             ItemClickEventArgs args = e as ItemClickEventArgs;
@@ -257,6 +288,12 @@ namespace com.touchstar.chrisd.nfcutils
             {
 
             }
+        }
+        public void OnPairDevice(BluetoothDevice device, int state)
+        {
+            _deviceList.Add(device);
+            //StopSearching(device.Name, state);
+            RefreshList();
         }
     }
 }

@@ -19,9 +19,9 @@ namespace com.touchstar.chrisd.nfcutils
             Window.SetFlags(WindowManagerFlags.Fullscreen, WindowManagerFlags.Fullscreen);
             SetContentView(Resource.Layout.activity_fragment);
 
-             //fm = SupportFragmentManager;
-            Fragment fragment = FragmentManager.FindFragmentById(Resource.Id.fragment_container);
-
+            //fm = SupportFragmentManager;
+            //Fragment fragment = FragmentManager.FindFragmentById(Resource.Id.fragment_container);
+            Fragment fragment = FragmentManager.FindFragmentByTag(TAG);
             if (fragment == null)
             {
                 fragment = CreateFragment();

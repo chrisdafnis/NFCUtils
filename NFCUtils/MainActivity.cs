@@ -22,8 +22,10 @@ namespace com.touchstar.chrisd.nfcutils
         public static readonly string FRAGMENT_TAG_NFC_PAIR = "TapAndPairFragment";
         public static readonly string FRAGMENT_TAG_NFC_UTILS = "NfcUtilsFragment";
         public static readonly string FRAGMENT_TAG_BLUETOOTH = "BluetoothFragment";
+        public static readonly string TAG = "MainActivity";
+        public const int MY_PERMISSION_REQUEST_CONSTANT = 0;
 
-        private BluetoothReceiver broadcastReceiver;
+        private BluetoothReceiver mBluetoothReceiver;
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.DefaultAdapter;
         private NfcAdapter nfcAdapter;
 
@@ -31,13 +33,21 @@ namespace com.touchstar.chrisd.nfcutils
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.activity_main);
-            MainMenuFragment mainMenuFrag = new MainMenuFragment();
+            Bundle args = new Bundle();
+            MainMenuFragment mainMenuFrag = MainMenuFragment.NewInstance(args);
+
             FragmentTransaction transaction = FragmentManager.BeginTransaction();
             transaction.Add(Resource.Id.main_menu_container, mainMenuFrag).Commit();
 
-            broadcastReceiver = new BluetoothReceiver(this);
-            RegisterReceiver(broadcastReceiver, new IntentFilter(BluetoothDevice.ActionFound));
-            RegisterReceiver(broadcastReceiver, new IntentFilter(BluetoothDevice.ActionBondStateChanged));
+            //mBluetoothReceiver = new BluetoothReceiver(this);
+            //IntentFilter filter = new IntentFilter(BluetoothDevice.ActionFound);
+            //filter.AddAction(BluetoothAdapter.ActionDiscoveryFinished);
+            //filter.AddAction(BluetoothDevice.ActionPairingRequest);
+            //filter.AddAction(BluetoothDevice.ActionBondStateChanged);
+            //filter.AddAction(BluetoothAdapter.ActionDiscoveryStarted);
+            //RegisterReceiver(mBluetoothReceiver, filter);
+            //RegisterReceiver(mBluetoothReceiver, new IntentFilter(BluetoothDevice.ActionFound));
+            //RegisterReceiver(mBluetoothReceiver, new IntentFilter(BluetoothDevice.ActionBondStateChanged));
             //SetContentView(Resource.Layout.activity_main);
             nfcAdapter = NfcAdapter.GetDefaultAdapter(this);
 
@@ -54,6 +64,10 @@ namespace com.touchstar.chrisd.nfcutils
 
             string operation = Intent.GetStringExtra("Operation");
             string activity = Intent.GetStringExtra("Activity");
+            if (activity == null)
+                activity = "NFCUtilities";
+            if (operation == null)
+                operation = "Application Run";
             Toast.MakeText(Application.Context, string.Format("MainActivity {0} {1} {2} {3}", "Launch Intent Activity=", activity, ", Operation=", operation), ToastLength.Long).Show();
 
             LauchActivity(activity);
@@ -62,14 +76,32 @@ namespace com.touchstar.chrisd.nfcutils
         protected override void OnStart()
         {
             base.OnStart();
-            broadcastReceiver = new BluetoothReceiver(this);
+            //mBluetoothReceiver = new BluetoothReceiver(this);
 
-            IntentFilter filter = new IntentFilter(BluetoothDevice.ActionFound);
-            filter.AddAction(BluetoothAdapter.ActionDiscoveryFinished);
-            filter.AddAction(BluetoothDevice.ActionPairingRequest);
-            filter.AddAction(BluetoothDevice.ActionBondStateChanged);
-            filter.AddAction(BluetoothAdapter.ActionDiscoveryStarted);
-            RegisterReceiver(broadcastReceiver, filter);
+            //IntentFilter filter = new IntentFilter(BluetoothDevice.ActionFound);
+            //filter.AddAction(BluetoothAdapter.ActionDiscoveryFinished);
+            //filter.AddAction(BluetoothDevice.ActionPairingRequest);
+            //filter.AddAction(BluetoothDevice.ActionBondStateChanged);
+            //filter.AddAction(BluetoothAdapter.ActionDiscoveryStarted);
+            //RegisterReceiver(mBluetoothReceiver, filter);
+            string[] permissions = new string[] { Android.Manifest.Permission.AccessFineLocation };
+            RequestPermissions(permissions, MY_PERMISSION_REQUEST_CONSTANT);
+        }
+
+        public void OnRequestPermissionsResult(int requestCode, string[] permissions, int[] grantResults)
+        {
+            switch (requestCode)
+            {
+                case MY_PERMISSION_REQUEST_CONSTANT:
+                {
+                    // If request is cancelled, the result arrays are empty.
+                    if (grantResults.Length > 0 && grantResults[0] == (int)Android.Content.PM.Permission.Granted)
+                    {
+                        //permission granted!
+                    }
+                    return;
+                }
+            }
         }
 
         private void LauchActivity(string launchIntentAction)
@@ -77,14 +109,13 @@ namespace com.touchstar.chrisd.nfcutils
             switch (launchIntentAction)
             {
                 case "NFCPair":
-                    {
-                        //StartActivityForResult(typeof(TapAndPairActivity), (int)ActivityCode.NFCPair);
-                        TapAndPairFragment tapAndPairFrag = TapAndPairFragment.NewInstance((int)ActivityCode.NFCPair);
-                        FragmentManager.BeginTransaction()
-                            .Replace(Resource.Id.main_menu_container, tapAndPairFrag, FRAGMENT_TAG_NFC_PAIR)
-                            .Commit();
-                    }
-                    break;
+                {
+                    TapAndPairFragment tapAndPairFrag = TapAndPairFragment.NewInstance((int)ActivityCode.NFCPair);
+                    FragmentManager.BeginTransaction()
+                        .Replace(Resource.Id.main_menu_container, tapAndPairFrag, FRAGMENT_TAG_NFC_PAIR)
+                        .Commit();
+                }
+                break;
                 default:
                     break;
             }
@@ -98,6 +129,7 @@ namespace com.touchstar.chrisd.nfcutils
 
         public void BluetoothFragmentOnOKButtonClicked(Intent result, int requestCode)
         {
+            OnActivityResult(requestCode, 0, result);
             OnBackPressed();
         }
 
@@ -112,10 +144,16 @@ namespace com.touchstar.chrisd.nfcutils
             switch ((ActivityCode)requestCode)
             {
                 case ActivityCode.NFCPair:
+                {
+                    //Java.Lang.Object nfcBundle = data.GetParcelableExtra("NFCDevice");
+                    SetResult(Result.Ok, data);
+                    Finish();
+                }
+                break;
+                case ActivityCode.Bluetooth:
                     {
-                        //Java.Lang.Object nfcBundle = data.GetParcelableExtra("NFCDevice");
-                        SetResult(Result.Ok, data);
-                        Finish();
+                        string name = data.GetStringExtra("BluetoothDeviceName");
+                        string mac = data.GetStringExtra("BluetoothDeviceAddress");
                     }
                     break;
                 default:
@@ -137,15 +175,20 @@ namespace com.touchstar.chrisd.nfcutils
         {
             TapAndPairFragment tapAndPairFrag = FragmentManager.FindFragmentByTag<TapAndPairFragment>(FRAGMENT_TAG_NFC_PAIR);
             NfcUtilsFragment nfcUtilsFrag = FragmentManager.FindFragmentByTag<NfcUtilsFragment>(FRAGMENT_TAG_NFC_UTILS);
-            if (tapAndPairFrag != null && nfcUtilsFrag == null)
+            BluetoothFragment bluetoothFrag = FragmentManager.FindFragmentByTag<BluetoothFragment>(FRAGMENT_TAG_BLUETOOTH);
+
+            if (tapAndPairFrag != null && nfcUtilsFrag == null && bluetoothFrag == null)
             {
                 tapAndPairFrag.OnNewIntent(intent);
             }
-            else if (tapAndPairFrag == null && nfcUtilsFrag != null)
+            else if (tapAndPairFrag == null && nfcUtilsFrag != null && bluetoothFrag == null)
             {
                 nfcUtilsFrag.OnNewIntent(intent);
             }
-
+            else if (tapAndPairFrag == null && nfcUtilsFrag == null && bluetoothFrag != null)
+            {
+                //bluetoothFrag.OnNewIntent(intent);
+            }
         }
 
         public void OnDeviceFound(BluetoothDevice bluetoothDevice, BluetoothClass bluetoothClass)
@@ -225,10 +268,10 @@ namespace com.touchstar.chrisd.nfcutils
 
         protected override void OnDestroy()
         {
-            if (broadcastReceiver != null)
-            {
-                UnregisterReceiver(broadcastReceiver);
-            }
+            //if (mBluetoothReceiver != null)
+            //{
+            //    UnregisterReceiver(mBluetoothReceiver);
+            //}
 
             base.OnDestroy();
         }

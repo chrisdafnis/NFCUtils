@@ -20,6 +20,8 @@ namespace com.touchstar.chrisd.nfcutils
         Button _nfcUtilsButton;
         Button _bluetoothUtilsButton;
 
+        private static MainActivity mainActivity;
+
         public enum ActivityCode { NFCPair = 0, NFCPairMenu, NFCUtils, Bluetooth };
         public static readonly string FRAGMENT_TAG_MAIN_MENU = "MainMenuFragment";
         public static readonly string FRAGMENT_TAG_NFC_PAIR = "TapAndPairFragment";
@@ -27,14 +29,17 @@ namespace com.touchstar.chrisd.nfcutils
         public static readonly string FRAGMENT_TAG_BLUETOOTH = "BluetoothFragment";
 
 
-        public static MainMenuFragment NewInstance()
+        public static MainMenuFragment NewInstance(Bundle args)
         {
-            var mainMenuFrag = new MainMenuFragment { Arguments = new Bundle() };
+            //args.Put
+            var mainMenuFrag = new MainMenuFragment { Arguments = args };
             return mainMenuFrag;
         }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+       public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle args)
         {
+            //byte[] activtyBytes = args.GetByteArray("MainActivity");
+
             if (container == null)
             {
                 // Currently in a layout without a container, so no reason to create our view.
@@ -85,12 +90,17 @@ namespace com.touchstar.chrisd.nfcutils
         private void BluetoothUtilsButton_OnClick(object sender, EventArgs e)
         {
             BluetoothFragment bluetoothPairFrag = (BluetoothFragment)FragmentManager.FindFragmentByTag(FRAGMENT_TAG_BLUETOOTH);
+            Bundle args = new Bundle();
+            //args.PutByteArray(this.ToString(), this.ToArray<byte>());
+
             if (bluetoothPairFrag == null)
-                bluetoothPairFrag = BluetoothFragment.NewInstance(0);
+                bluetoothPairFrag = BluetoothFragment.NewInstance(args);
             FragmentManager.BeginTransaction()
                 .Replace(Resource.Id.main_menu_container, bluetoothPairFrag, FRAGMENT_TAG_BLUETOOTH)
                 .AddToBackStack(FRAGMENT_TAG_BLUETOOTH)
                 .Commit();
+            //var intent = new Intent(Activity, typeof(BluetoothUtilsActivity));
+            //StartActivity(intent);
         }
     }
 }
