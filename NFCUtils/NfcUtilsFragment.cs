@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -12,6 +13,7 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Java.Util;
 
 namespace com.touchstar.chrisd.nfcutils
 {
@@ -27,21 +29,33 @@ namespace com.touchstar.chrisd.nfcutils
         TextView _writeTextView;
         private bool _inReadMode;
         private bool _inWriteMode;
-        //private NfcAdapter _nfcAdapter;
         protected string _tagUid;
         private View _view;
+        private static MainActivity _activity;
+        private static String _nfcTag;
 
         public static readonly string FRAGMENT_TAG_MAIN_MENU = "MainMenuFragment";
         public static readonly string FRAGMENT_TAG_NFC_PAIR = "TapAndPairFragment";
         public static readonly string FRAGMENT_TAG_NFC_UTILS = "NfcUtilsFragment";
         public static readonly string FRAGMENT_TAG_BLUETOOTH = "BluetoothFragment";
 
-        public static NfcUtilsFragment NewInstance()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static NfcUtilsFragment NewInstance(string nfcTag)
         {
             var nfcUtilsFrag = new NfcUtilsFragment { Arguments = new Bundle() };
+            _nfcTag = nfcTag;
             return nfcUtilsFrag;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inflater"></param>
+        /// <param name="container"></param>
+        /// <param name="savedInstanceState"></param>
+        /// <returns></returns>
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             if (container == null)
@@ -51,7 +65,11 @@ namespace com.touchstar.chrisd.nfcutils
             }
             return inflater.Inflate(Resource.Layout.nfc_utils_fragment, container, false);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="view"></param>
+        /// <param name="savedInstanceState"></param>
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             _view = view;
@@ -59,57 +77,56 @@ namespace com.touchstar.chrisd.nfcutils
             _readTagButton = view.FindViewById<Button>(Resource.Id.read_tag_button);
             _writeTagButton = view.FindViewById<Button>(Resource.Id.write_tag_button);
             _messageTextView = view.FindViewById<TextView>(Resource.Id.text_view);
-            _writeTextView = view.FindViewById<TextView>(Resource.Id.text_view);
+            _writeTextView = view.FindViewById<TextView>(Resource.Id.write_text);
             // assign the click events
             _readTagButton.Click += ReadTagButton_OnClick;
             _writeTagButton.Click += WriteTagButton_OnClick;
 
-            //_nfcAdapter = NfcAdapter.GetDefaultAdapter(_view.Context);
+            if (_nfcTag != null)
+            {
+                _writeTextView.Text = _nfcTag;
+            }
 
             base.OnViewCreated(view, savedInstanceState);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        public override void OnAttach(Context context)
+        {
+            base.OnAttach(context);
+            _activity = context as MainActivity;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
         private void DisplayMessage(string message)
         {
             _messageTextView.Text = message;
-            //Log.Info(this.Application.PackageName, message);
         }
 
         #region NFC
-
         #region Read specific functions
         /// <summary>
-        /// Identify to Android that this activity wants to be notified when 
-        /// an NFC tag is discovered. 
+        /// 
         /// </summary>
-        private void EnableReadMode()
-        {
-            _inReadMode = true;
-            (this.Activity as MainActivity).EnableReadMode();
-        }
-
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         private void ReadTagButton_OnClick(object sender, EventArgs eventArgs)
         {
             var view = (View)sender;
             if (view.Id == Resource.Id.read_tag_button)
             {
                 DisplayMessage("Touch and hold the tag against the phone to read.");
-                EnableReadMode();
+                _writeTextView.Text = String.Empty;
+                _activity.EnableReadMode();
+                _inReadMode = true;
             }
         }
         #endregion // Read specific functions
-
         #region Write Specific functions
-        /// <summary>
-        /// Identify to Android that this activity wants to be notified when 
-        /// an NFC tag is discovered. 
-        /// </summary>
-        private void EnableWriteMode()
-        {
-            _inWriteMode = true;
-            (this.Activity as MainActivity).EnableWriteMode();
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -143,17 +160,21 @@ namespace com.touchstar.chrisd.nfcutils
             _writeTextView.Text = String.Empty;
             return false;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         private void WriteTagButton_OnClick(object sender, EventArgs eventArgs)
         {
             var view = (View)sender;
             if (view.Id == Resource.Id.write_tag_button)
             {
                 DisplayMessage("Touch and hold the tag against the phone to write.");
-                EnableWriteMode();
+                _activity.EnableWriteMode();
+                _inWriteMode = true;
             }
         }
-
         /// <summary>
         /// This method will try and write the specified message to the provided tag. 
         /// </summary>
@@ -162,64 +183,41 @@ namespace com.touchstar.chrisd.nfcutils
         /// <returns>true if the tag was written to.</returns>
         private bool TryAndWriteToTag(Tag tag, NdefMessage ndefMessage)
         {
-            // This object is used to get information about the NFC tag as 
-            // well as perform operations on it.
-            NdefFormatable formatable = NdefFormatable.Get(tag);
-            bool success = false;
-            if (formatable != null)
+            bool returnVal = false;
+            var ndef = Ndef.Get(tag);
+            if (ndef != null)
             {
+                bool connected = ndef.IsConnected;
                 try
                 {
-                    formatable.Connect();
+                    ndef.Connect();
 
-                    try
+                    // Once written to, a tag can be marked as read-only - check for this.
+                    if (!ndef.IsWritable)
                     {
-                        formatable.Format(ndefMessage);
-                        DisplayMessage("Succesfully wrote tag.");
-                        success = true;
+                        DisplayMessage("Tag is read-only.");
                     }
-                    catch (Exception e)
+
+                    // NFC tags can only store a small amount of data, this depends on the type of tag its.
+                    var size = ndefMessage.ToByteArray().Length;
+                    if (ndef.MaxSize < size)
                     {
-                        // let the user know the tag refused to format
+                        DisplayMessage("Tag doesn't have enough space.");
                     }
-                }
-                catch (Exception e)
-                {
-                    // let the user know the tag refused to connect
-                }
-                finally
-                {
-                    formatable.Close();
-                }
-            }
-            else
-            {
-                string[] techList = tag.GetTechList();
-                Ndef ndefTag = Ndef.Get(tag);
-                ndefTag.Connect();
-                // Once written to, a tag can be marked as read-only - check for this.
-                if (!ndefTag.IsWritable)
-                {
-                    DisplayMessage("Tag is read-only.");
-                }
 
-                // NFC tags can only store a small amount of data, this depends on the type of tag its.
-                var size = ndefMessage.ToByteArray().Length;
-                if (ndefTag.MaxSize < size)
-                {
-                    DisplayMessage("Tag doesn't have enough space.");
+                    ndef.WriteNdefMessage(ndefMessage);
+                    DisplayMessage("Succesfully wrote tag.");
+                    returnVal = true;
                 }
-
-                ndefTag.WriteNdefMessage(ndefMessage);
-                DisplayMessage("Succesfully wrote tag.");
-            }
-
-            return success;
+                catch
+                {
+                    DisplayMessage("Write failed. Was the Tag removed too soon?");
+                }
+             }
+            return returnVal;
         }
         #endregion // Write Specific functions
-
         #endregion // NFC
-
         /// <summary>
         /// This method is called when an NFC tag is discovered by the application.
         /// </summary>
@@ -242,41 +240,31 @@ namespace com.touchstar.chrisd.nfcutils
                     HandleNFC(intent, true);
                 }
 
-                //added the below lines, can delete if they don't work.
-                //NdefRecord payload = ((NdefMessage)rawMsgs[0]).GetRecords()[0];
-                //byte[] currentPayloadBytes = payload.GetPayload();
-
-                //String currentPayloadString = System.Text.Encoding.UTF8.GetString(currentPayloadBytes, 0, currentPayloadBytes.Length);
                 var tagId = tag.GetId();
                 _tagUid = ByteArrayToString(tagId);
                 Log.Info(this.GetType().ToString(), "Card UID is " + _tagUid);
-
-                //DisplayMessage("Card UID is " + _tagUid + newLine + "Payload is " + "'" + currentPayloadString + "'");
             }
             else if (_inWriteMode)
             {
                 _inWriteMode = false;
-                var tag = intent.GetParcelableExtra(NfcAdapter.ExtraTag) as Tag;
-
-                if (tag == null)
-                {
-                    return;
-                }
-
-                // These next few lines will create a payload (consisting of a string)
-                // and a mimetype. NFC record are arrays of bytes. 
+                var obj = intent.GetParcelableExtra(NfcAdapter.ExtraTag) as Tag;
                 var payload = Encoding.ASCII.GetBytes(_writeTextView.Text);
-                var nfcRecord = new NdefRecord(NdefRecord.TnfWellKnown, new byte[0], new byte[0], payload);
+                var typeBytes = Encoding.ASCII.GetBytes(_writeTextView.Text.GetType().ToString());
+                var nfcRecord = new NdefRecord(NdefRecord.TnfWellKnown, typeBytes, new byte[0], payload);
                 var ndefMessage = new NdefMessage(new[] { nfcRecord });
-
-                if (!TryAndWriteToTag(tag, ndefMessage))
+                
+                if (!TryAndWriteToTag(obj, ndefMessage))
                 {
                     // Maybe the write couldn't happen because the tag wasn't formatted?
-                    TryAndFormatTagWithMessage(tag, ndefMessage);
+                    TryAndFormatTagWithMessage(obj, ndefMessage);
                 }
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="intent"></param>
+        /// <param name="inForeground"></param>
         protected void HandleNFC(Intent intent, Boolean inForeground)
         {
             NdefMessage[] msgs = null;
@@ -303,19 +291,8 @@ namespace com.touchstar.chrisd.nfcutils
                                 if (NdefRecord.TnfWellKnown == records[j].Tnf)
                                 {
                                     // If we're a URI type, parse it.
-                                    String uri = ParseUriRecord(records[j]);
-                                    DisplayMessage(uri);
-                                }
-                                else if (NdefRecord.TnfMimeMedia == records[j].Tnf)
-                                {
-                                    // bluetooth mime type
-
-                                    //String uri = ParseUriRecord(records[j]);
-                                    //String mime = records[j].ToMimeType();
-                                    //NdefRecord mimeRec = NdefRecord.CreateMime(mime, records[j].GetPayload());
-                                    //char[] payload = Encoding.ASCII.GetChars(records[j].GetPayload());
-                                    //String str = records[j].ToString();
-                                    //DisplayMessage(uri + mime + str);
+                                    String message = ParseNdefRecord(records[j]);
+                                    DisplayMessage(message);
                                 }
                             }
                         }
@@ -327,18 +304,26 @@ namespace com.touchstar.chrisd.nfcutils
                 DisplayMessage("No message");
             }
         }
-
-        private string ParseUriRecord(NdefRecord ndefRecord)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ndefRecord"></param>
+        /// <returns></returns>
+        private string ParseNdefRecord(NdefRecord ndefRecord)
         {
             byte[] payload = ndefRecord.GetPayload();
 
             // Get the Language Code
             int languageCodeLength = payload[0] & 0063;
+            var payloadValue = System.Text.UTF8Encoding.ASCII.GetChars(payload);
 
-            return new String(System.Text.UTF8Encoding.ASCII.GetChars(payload), languageCodeLength + 1, payload.Length - languageCodeLength - 1);
+            return new String(payloadValue);
         }
-
-        //Convert the byte array of the NfcCard Uid to string
+        /// <summary>
+        /// Convert the byte array of the NfcCard Uid to string
+        /// </summary>
+        /// <param name="ba"></param>
+        /// <returns></returns>
         private static string ByteArrayToString(byte[] ba)
         {
             var hex = new StringBuilder(ba.Length * 2);

@@ -20,7 +20,7 @@ namespace com.touchstar.chrisd.nfcutils
         Button _nfcUtilsButton;
         Button _bluetoothUtilsButton;
 
-        private static MainActivity mainActivity;
+        private static MainActivity _activity;
 
         public enum ActivityCode { NFCPair = 0, NFCPairMenu, NFCUtils, Bluetooth };
         public static readonly string FRAGMENT_TAG_MAIN_MENU = "MainMenuFragment";
@@ -62,7 +62,15 @@ namespace com.touchstar.chrisd.nfcutils
 
             base.OnViewCreated(view, savedInstanceState);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        public override void OnAttach(Context context)
+        {
+            base.OnAttach(context);
+            _activity = context as MainActivity;
+        }
         private void NfcPairButton_OnClick(object sender, EventArgs e)
         {
             TapAndPairFragment tapAndPairFrag = (TapAndPairFragment)FragmentManager.FindFragmentByTag(FRAGMENT_TAG_NFC_PAIR);
@@ -79,7 +87,7 @@ namespace com.touchstar.chrisd.nfcutils
         {
             NfcUtilsFragment nfcUtilsPairFrag = (NfcUtilsFragment)FragmentManager.FindFragmentByTag(FRAGMENT_TAG_NFC_UTILS);
             if(nfcUtilsPairFrag == null)
-                nfcUtilsPairFrag = NfcUtilsFragment.NewInstance();
+                nfcUtilsPairFrag = NfcUtilsFragment.NewInstance(_activity.NfcTag);
 
             FragmentManager.BeginTransaction()
                .Replace(Resource.Id.main_menu_container, nfcUtilsPairFrag, FRAGMENT_TAG_NFC_UTILS)

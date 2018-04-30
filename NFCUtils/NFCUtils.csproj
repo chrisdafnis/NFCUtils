@@ -108,19 +108,16 @@
     <Compile Include="BluetoothDeviceArrayAdapter.cs" />
     <Compile Include="BluetoothFragment.cs" />
     <Compile Include="BluetoothReceiver.cs" />
-    <Compile Include="BluetoothUtilsActivity.cs" />
     <Compile Include="DiscoveredDevice.cs" />
     <Compile Include="DiscoveredDeviceBluetooth.cs" />
     <Compile Include="DiscoveryHandler.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MainMenuFragment.cs" />
     <Compile Include="NFCDevice.cs" />
-    <Compile Include="NfcUtilsActivity.cs" />
     <Compile Include="NfcUtilsFragment.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SingleFragmentActivity.cs" />
-    <Compile Include="TapAndPairActivity.cs" />
     <Compile Include="TapAndPairFragment.cs" />
     <Compile Include="VisibleFragment.cs" />
   </ItemGroup>
