@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -206,6 +207,7 @@ namespace com.touchstar.chrisd.nfcutils
                     }
 
                     ndef.WriteNdefMessage(ndefMessage);
+                    ndef.Close();
                     DisplayMessage("Succesfully wrote tag.");
                     returnVal = true;
                 }
@@ -247,12 +249,13 @@ namespace com.touchstar.chrisd.nfcutils
             else if (_inWriteMode)
             {
                 _inWriteMode = false;
+
                 var obj = intent.GetParcelableExtra(NfcAdapter.ExtraTag) as Tag;
-                var payload = Encoding.ASCII.GetBytes(_writeTextView.Text);
-                var typeBytes = Encoding.ASCII.GetBytes(_writeTextView.Text.GetType().ToString());
-                var nfcRecord = new NdefRecord(NdefRecord.TnfWellKnown, typeBytes, new byte[0], payload);
+                CultureInfo info = CultureInfo.CurrentCulture;
+                var payload = _writeTextView.Text;
+                var nfcRecord = NdefRecord.CreateTextRecord(info.TwoLetterISOLanguageName, payload);
                 var ndefMessage = new NdefMessage(new[] { nfcRecord });
-                
+
                 if (!TryAndWriteToTag(obj, ndefMessage))
                 {
                     // Maybe the write couldn't happen because the tag wasn't formatted?
@@ -290,9 +293,15 @@ namespace com.touchstar.chrisd.nfcutils
                                 Log.Info("MainActivity", "Record found");
                                 if (NdefRecord.TnfWellKnown == records[j].Tnf)
                                 {
-                                    // If we're a URI type, parse it.
-                                    String message = ParseNdefRecord(records[j]);
-                                    DisplayMessage(message);
+                                    try
+                                    {
+                                        String message = ParseNdefRecord(records[j]);
+                                        DisplayMessage(message);
+                                    }
+                                    catch
+                                    {
+                                        DisplayMessage("Error reading Tag.");
+                                    }
                                 }
                             }
                         }
@@ -315,9 +324,10 @@ namespace com.touchstar.chrisd.nfcutils
 
             // Get the Language Code
             int languageCodeLength = payload[0] & 0063;
-            var payloadValue = System.Text.UTF8Encoding.ASCII.GetChars(payload);
+            char[] payloadChars = UTF8Encoding.ASCII.GetChars(payload);
+            var payloadValue = new String(payloadChars, languageCodeLength + 1, payload.Length - languageCodeLength - 1);
 
-            return new String(payloadValue);
+            return payloadValue;
         }
         /// <summary>
         /// Convert the byte array of the NfcCard Uid to string

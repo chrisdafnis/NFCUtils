@@ -27,9 +27,7 @@ namespace com.touchstar.chrisd.nfcutils
         private ListView _listview;
         private TextView _tvInfo;
         private Button _buttonOk;
-        //private BluetoothReceiver _bluetoothReceiver;
         ObservableCollection<BluetoothDevice> _deviceList = new ObservableCollection<BluetoothDevice>();
-        //BluetoothAdapter _bluetoothAdapter = BluetoothAdapter.DefaultAdapter;
         BluetoothDevice _selectedDevice;
         public event EventHandler OnDevicePaired;
 
@@ -102,13 +100,13 @@ namespace com.touchstar.chrisd.nfcutils
                 _listview.SetSelection(e.Position);
                 (_listview.Adapter as BluetoothDeviceArrayAdapter).SetSelectedIndex(e.Position);
 
-                var mi = _selectedDevice.Class.GetMethod("removeBond", null);
-                mi.Invoke(_selectedDevice, null);
+                //var mi = _selectedDevice.Class.GetMethod("removeBond", null);
+                //mi.Invoke(_selectedDevice, null);
 
-                //if (_selectedDevice != null)
-                //    _buttonOk.Enabled = true;
-                //else
-                //    _buttonOk.Enabled = false;
+                if (_selectedDevice != null)
+                    _buttonOk.Enabled = true;
+                else
+                    _buttonOk.Enabled = false;
             };
             return parentView;
         }
@@ -117,10 +115,10 @@ namespace com.touchstar.chrisd.nfcutils
         /// </summary>
         /// <param name="view"></param>
         /// <param name="savedInstanceState"></param>
-        public override void OnViewCreated(View view, Bundle savedInstanceState)
-        {
-            base.OnViewCreated(view, savedInstanceState);
-        }
+        //public override void OnViewCreated(View view, Bundle savedInstanceState)
+        //{
+        //    base.OnViewCreated(view, savedInstanceState);
+        //}
         /// <summary>
         /// 
         /// </summary>
@@ -202,7 +200,6 @@ namespace com.touchstar.chrisd.nfcutils
                     {
                         FriendlyName = GetDeviceFriendlyName(payload),
                         MacAddress = GetDeviceMacAddress(payloadBytes),
-                        PIN = GetDevicePIN(payload).Value
                     };
                     if (IsDevicePaired(nfcDevice.FriendlyName))
                     {

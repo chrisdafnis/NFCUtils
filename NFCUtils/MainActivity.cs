@@ -87,6 +87,11 @@ namespace com.touchstar.chrisd.nfcutils
                   Android.Manifest.Permission.BluetoothAdmin,
                   Android.Manifest.Permission.Nfc };
             RequestPermissions(permissions, MY_PERMISSION_REQUEST_CONSTANT);
+        }
+
+        protected override void OnResume()
+        {
+            base.OnResume();
 
             _bluetoothReceiver = new BluetoothReceiver(this);
 
