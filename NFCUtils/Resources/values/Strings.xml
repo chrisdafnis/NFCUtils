@@ -13,4 +13,5 @@
   <string name="MainActivity_AlreadyPaired">is already paired</string>
   <string name="MainActivity_PrintTestPage">Click to print test label</string>
   <string name="MainActivity_UnpairDevice">Click to Unpair device</string>
+  <string name="MainActivity_PairCancelled">Pairing cancelled with</string>
 </resources>

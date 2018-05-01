@@ -49,7 +49,6 @@ namespace com.touchstar.chrisd.nfcutils
             InvalidBluetoothAddress
         }
 
-        //BluetoothReceiver _bluetoothReceiver;
         ObservableCollection<BluetoothDevice> _deviceList = new ObservableCollection<BluetoothDevice>();
 
         Button _buttonScan;
@@ -58,7 +57,6 @@ namespace com.touchstar.chrisd.nfcutils
         BluetoothAction _bluetoothAction;
         ListView _deviceFoundList;
         BluetoothDevice _bluetoothDevice;
-        //Bluetooth _bluetooth;
         int _requestCode;
 
         OnButtonClicked _buttonOkClicked;
@@ -122,7 +120,6 @@ namespace com.touchstar.chrisd.nfcutils
                 _activity.Bluetooth.Adapter.CancelDiscovery();
                 _activity.Bluetooth.Adapter.StartDiscovery();
             };
-            //_activity.Bluetooth.Adapter = BluetoothAdapter.DefaultAdapter;
 
             _deviceFoundList = _parentView.FindViewById<ListView>(Resource.Id.device_list);
             _deviceFoundList.Adapter = new BluetoothDeviceArrayAdapter(_parentView.Context, Resource.Layout.row_layout, _deviceList);
@@ -180,22 +177,6 @@ namespace com.touchstar.chrisd.nfcutils
                     break;
             }
             return _parentView;
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="view"></param>
-        /// <param name="savedInstanceState"></param>
-        public override void OnViewCreated(View view, Bundle savedInstanceState)
-        {
-            base.OnViewCreated(view, savedInstanceState);
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public override void OnResume()
-        {
-            base.OnResume();
         }
         /// <summary>
         /// 
@@ -274,7 +255,7 @@ namespace com.touchstar.chrisd.nfcutils
         /// <param name="paired"></param>
         /// <param name="state"></param>
         /// <param name="success"></param>
-        public new void OnPaired(bool paired, object state, bool success)
+        public void OnPaired(bool paired, object state, bool success)
         {
             Activity.RunOnUiThread(() =>
             {

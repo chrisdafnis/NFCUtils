@@ -3008,6 +3008,9 @@ namespace com.touchstar.chrisd
 			// aapt resource value: 0x7f050023
 			public const int MainActivity_AttemptToPair = 2131034147;
 			
+			// aapt resource value: 0x7f05002c
+			public const int MainActivity_PairCancelled = 2131034156;
+			
 			// aapt resource value: 0x7f050027
 			public const int MainActivity_PairComplete = 2131034151;
 			

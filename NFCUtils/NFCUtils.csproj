@@ -113,7 +113,6 @@
     <Compile Include="DiscoveryHandler.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MainMenuFragment.cs" />
-    <Compile Include="NFCDevice.cs" />
     <Compile Include="NfcUtilsFragment.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

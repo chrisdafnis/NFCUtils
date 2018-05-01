@@ -18,6 +18,7 @@ namespace com.touchstar.chrisd.nfcutils
     public class TapAndPairFragment : VisibleFragment
     {
         public enum ActivityCode { NFCPair = 0, NFCPairMenu };
+        public enum Bonding { None = 10, Bonding, Bonded, Pairing, Cancelled };
         public static readonly string FRAGMENT_TAG_MAIN_MENU = "MainMenuFragment";
         public static readonly string FRAGMENT_TAG_NFC_PAIR = "TapAndPairFragment";
         public static readonly string FRAGMENT_TAG_NFC_UTILS = "NfcUtilsFragment";
@@ -100,9 +101,6 @@ namespace com.touchstar.chrisd.nfcutils
                 _listview.SetSelection(e.Position);
                 (_listview.Adapter as BluetoothDeviceArrayAdapter).SetSelectedIndex(e.Position);
 
-                //var mi = _selectedDevice.Class.GetMethod("removeBond", null);
-                //mi.Invoke(_selectedDevice, null);
-
                 if (_selectedDevice != null)
                     _buttonOk.Enabled = true;
                 else
@@ -110,15 +108,6 @@ namespace com.touchstar.chrisd.nfcutils
             };
             return parentView;
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="view"></param>
-        /// <param name="savedInstanceState"></param>
-        //public override void OnViewCreated(View view, Bundle savedInstanceState)
-        //{
-        //    base.OnViewCreated(view, savedInstanceState);
-        //}
         /// <summary>
         /// 
         /// </summary>
@@ -140,6 +129,14 @@ namespace com.touchstar.chrisd.nfcutils
         /// <summary>
         /// 
         /// </summary>
+        public override void OnResume()
+        {
+            base.OnResume();
+            _activity.EnableReadMode();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void TapAndPair_OnDevicePaired(object sender, EventArgs e)
@@ -157,7 +154,7 @@ namespace com.touchstar.chrisd.nfcutils
                 returnIntent.PutExtra("NFCDevice", "No selected device");
                 returnIntent.PutExtra("NFCDevice", _selectedDevice);
             }
-            OnPairDevice(_selectedDevice, 0);
+            OnPairDevice(_selectedDevice, (int)Bonding.Pairing);
         }
         /// <summary>
         /// 
@@ -196,18 +193,15 @@ namespace com.touchstar.chrisd.nfcutils
                     {
                         payload += Convert.ToChar(b);
                     }
-                    NfcDevice nfcDevice = new NfcDevice
+                    string friendlyName = GetDeviceFriendlyName(payload);
+                    string macAddress = GetDeviceMacAddress(payloadBytes);
+                    if (IsDevicePaired(friendlyName))
                     {
-                        FriendlyName = GetDeviceFriendlyName(payload),
-                        MacAddress = GetDeviceMacAddress(payloadBytes),
-                    };
-                    if (IsDevicePaired(nfcDevice.FriendlyName))
-                    {
-                        ShowAlreadyPaired(nfcDevice.FriendlyName);
+                        ShowAlreadyPaired(friendlyName);
                     }
                     else
                     {
-                        StartSearching(nfcDevice.FriendlyName);
+                        StartSearching(friendlyName);
                         Activity.RunOnUiThread(() =>
                         {
                             try
@@ -218,7 +212,7 @@ namespace com.touchstar.chrisd.nfcutils
                                 if (!_activity.Bluetooth.Adapter.IsEnabled)
                                     throw new Exception("Bluetooth adapter is not enabled.");
 
-                                PairDevice(nfcDevice);
+                                PairDevice(friendlyName, macAddress);
                             }
                             catch (DiscoveryException e)
                             {
@@ -233,7 +227,6 @@ namespace com.touchstar.chrisd.nfcutils
                 }
                 catch (Exception ex)
                 {
-                    //Toast.MakeText(_parentView.Context, string.Format("{0} {1}", GetString(Resource.String.MainActivity_PairFailed), nfcDevice.FriendlyName), ToastLength.Long).Show();
                 }
 
                 intent.RemoveExtra(NfcAdapter.ExtraNdefMessages);
@@ -243,9 +236,9 @@ namespace com.touchstar.chrisd.nfcutils
         /// 
         /// </summary>
         /// <param name="nfcDevice"></param>
-        private void PairDevice(NfcDevice nfcDevice)
+        private void PairDevice(string friendlyName, string macAddress)
         {
-            BluetoothDevice device = _activity.Bluetooth.Adapter.GetRemoteDevice(nfcDevice.MacAddress);
+            BluetoothDevice device = _activity.Bluetooth.Adapter.GetRemoteDevice(macAddress);
 
             if (device != null)
             {
@@ -253,25 +246,21 @@ namespace com.touchstar.chrisd.nfcutils
                 {
                     OnDevicePaired(device, EventArgs.Empty);
                 }
-                else
-                {
-                    Toast.MakeText(Activity, string.Format("{0} {1}", GetString(Resource.String.MainActivity_PairFailed), nfcDevice.FriendlyName), ToastLength.Long).Show();
-                }
             }
             else
             {
-                Toast.MakeText(Activity, string.Format("{0} {1}", GetString(Resource.String.MainActivity_PairFailed), nfcDevice.FriendlyName), ToastLength.Long).Show();
+                Toast.MakeText(Activity, string.Format("{0} {1}", GetString(Resource.String.MainActivity_PairFailed), friendlyName), ToastLength.Long).Show();
             }
         }
 
         public override void OnPairDevice(object device, int state)
         {
             BluetoothDevice btDevice = device as BluetoothDevice;
-            if ((Bond)state == Bond.None)
+            if ((Bonding)state == Bonding.None)
             {
                 _deviceList.Remove(btDevice);
             }
-            else if ((Bond)state == Bond.Bonded)
+            else if ((Bonding)state == Bonding.Bonded)
             {
                 _deviceList.Add(btDevice);
             }
@@ -312,13 +301,18 @@ namespace com.touchstar.chrisd.nfcutils
                 {
                     switch (state)
                     {
-                        case (int)Bond.None:
+                        case (int)Bonding.None:
                             Toast.MakeText(Activity, string.Format("{0} {1}", GetString(Resource.String.MainActivity_UnpairSuccessful), deviceName), ToastLength.Long).Show();
                             break;
-                        case (int)Bond.Bonding:
+                        case (int)Bonding.Bonding:
                             break;
-                        case (int)Bond.Bonded:
+                        case (int)Bonding.Bonded:
                             Toast.MakeText(Activity, string.Format("{0} {1}", GetString(Resource.String.MainActivity_PairSuccessful), deviceName), ToastLength.Long).Show();
+                            break;
+                        case (int)Bonding.Pairing:
+                            break;
+                        case (int)Bonding.Cancelled:
+                            Toast.MakeText(Activity, string.Format("{0} {1}", GetString(Resource.String.MainActivity_PairCancelled), deviceName), ToastLength.Long).Show();
                             break;
                         default:
                             Toast.MakeText(Activity, string.Format("{0} {1}", GetString(Resource.String.MainActivity_PairFailed), deviceName), ToastLength.Long).Show();

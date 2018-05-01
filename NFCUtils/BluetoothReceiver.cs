@@ -1,6 +1,7 @@
 using Android.App;
 using Android.Bluetooth;
 using Android.Content;
+using static com.touchstar.chrisd.nfcutils.TapAndPairFragment;
 
 namespace com.touchstar.chrisd.nfcutils
 {
@@ -92,23 +93,12 @@ namespace com.touchstar.chrisd.nfcutils
 
                 case BluetoothDevice.ActionBondStateChanged:
                     {
-                        Bond state = (Bond)intent.GetIntExtra(BluetoothDevice.ExtraBondState, BluetoothDevice.Error);
-                        Bond prevState = (Bond)intent.GetIntExtra(BluetoothDevice.ExtraPreviousBondState, BluetoothDevice.Error);
+                        Bonding state = (Bonding)intent.GetIntExtra(BluetoothDevice.ExtraBondState, BluetoothDevice.Error);
+                        Bonding prevState = (Bonding)intent.GetIntExtra(BluetoothDevice.ExtraPreviousBondState, BluetoothDevice.Error);
                         BluetoothDevice device = (BluetoothDevice)intent.GetParcelableExtra(BluetoothDevice.ExtraDevice);
 
-                        if (state == Bond.Bonded && prevState == Bond.Bonding)
-                        {
-                            if (_fragment != null)
-                            {
-                                _fragment.OnPairDevice(device, (int)state);
-                            }
-                            else if (_activity != null)
-                            {
-                                _activity.OnPairDevice(device, (int)state);
-                            }
-                            return;
-                        }
-                        if (state == Bond.None && prevState == Bond.Bonded)
+                        // device has successfully paired
+                        if (state == Bonding.Bonded && prevState == Bonding.Bonding)
                         {
                             if (_fragment != null)
                             {
@@ -121,7 +111,35 @@ namespace com.touchstar.chrisd.nfcutils
                             return;
                         }
 
-                        if (state == Bond.None && (prevState == Bond.None || prevState == Bond.Bonding))
+                        // device has successfully unpaired
+                        if (state == Bonding.None && prevState == Bonding.Bonded)
+                        {
+                            if (_fragment != null)
+                            {
+                                _fragment.OnPairDevice(device, (int)state);
+                            }
+                            else if (_activity != null)
+                            {
+                                _activity.OnPairDevice(device, (int)state);
+                            }
+                            return;
+                        }
+
+                        // device pairing was cancelled
+                        if (state == Bonding.None && prevState == Bonding.Bonding)
+                        {
+                            if (_fragment != null)
+                            {
+                                _fragment.OnPairDevice(device, (int)Bonding.Cancelled);
+                            }
+                            else if (_activity != null)
+                            {
+                                _activity.OnPairDevice(device, (int)Bonding.Cancelled);
+                            }
+                            return;
+                        }
+
+                        if (state == Bonding.None && prevState == Bonding.None)
                         {
                             if (_fragment != null)
                             {
